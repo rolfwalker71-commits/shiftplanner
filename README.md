@@ -54,4 +54,4 @@ Beim Ablegen, Verschieben oder Löschen einer Schicht wird das Event sofort im g
 docker compose up --build
 ```
 
-Daten liegen in Volumes (`backend/data` SQLite, `backend/uploads` Bilder). Image für GHCR: Push auf `main` baut `linux/amd64` und `linux/arm64` via `.github/workflows/docker-publish.yml`.
+Daten liegen in Volumes (`backend/data` SQLite, `backend/uploads` Bilder). Image für GHCR: Push auf `main` baut `linux/amd64` via `.github/workflows/docker-publish.yml`.
