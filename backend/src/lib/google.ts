@@ -94,15 +94,24 @@ async function ensureDriveIllustration(opts: {
   code: string;
   imagePath?: string | null;
   existingId?: string | null;
-}) {
+}): Promise<{ id: string; fileUrl: string } | null> {
   const auth = userAuth(opts.user);
   const file = localIllustration(opts.imagePath);
-  if (!auth || !file) return opts.existingId ?? null;
+  if (!auth || !file) return null;
   const drive = google.drive({ version: "v3", auth });
+
+  const asAttachment = (id: string, webViewLink?: string | null) => ({
+    id,
+    fileUrl: webViewLink || `https://drive.google.com/file/d/${id}/view?usp=drivesdk`,
+  });
+
   if (opts.existingId) {
     try {
-      await drive.files.get({ fileId: opts.existingId, fields: "id" });
-      return opts.existingId;
+      const existing = await drive.files.get({
+        fileId: opts.existingId,
+        fields: "id, webViewLink",
+      });
+      if (existing.data.id) return asAttachment(existing.data.id, existing.data.webViewLink);
     } catch {
       /* upload again */
     }
@@ -117,9 +126,10 @@ async function ensureDriveIllustration(opts: {
         mimeType: "image/png",
         body: createReadStream(file),
       },
-      fields: "id",
+      fields: "id, webViewLink",
     });
-    return created.data.id ?? null;
+    if (!created.data.id) return null;
+    return asAttachment(created.data.id, created.data.webViewLink);
   } catch {
     return null;
   }
@@ -141,24 +151,27 @@ export async function upsertCalendarEvent(opts: {
   const cal = await calendarClient(opts.user);
   const calendarId = opts.user.selectedCalendarId;
   if (!cal || !calendarId) return { eventId: null as string | null, driveFileId: opts.googleDriveFileId ?? null };
+  const calendar = cal;
+  const calId = calendarId;
 
-  const driveFileId = await ensureDriveIllustration({
+  const illustration = await ensureDriveIllustration({
     user: opts.user,
     code: opts.code,
     imagePath: opts.imagePath,
     existingId: opts.googleDriveFileId,
   });
+  const driveFileId = illustration?.id ?? opts.googleDriveFileId ?? null;
 
   const timeLabel = opts.allDay || !opts.startTime
     ? "ganztags"
     : `${opts.startTime}–${opts.endTime}`;
-  const body = {
+  const baseBody = {
     summary: `${opts.code} · ${opts.name}`,
     description: [
       `${opts.code} · ${opts.name}`,
       timeLabel,
       opts.description?.trim() || "",
-      driveFileId ? "Schichtbild: siehe Anhang." : "",
+      illustration ? "Schichtbild: siehe Anhang." : "",
       "Geplant mit Schichtklar",
     ]
       .filter(Boolean)
@@ -170,30 +183,51 @@ export async function upsertCalendarEvent(opts: {
       opts.allDay,
       opts.user.timezone,
     ),
-    ...(driveFileId
-      ? {
-          attachments: [
-            {
-              fileId: driveFileId,
-              mimeType: "image/png",
-              title: `${opts.code}.png`,
-            },
-          ],
-        }
-      : {}),
   };
+  const withAttachment = illustration
+    ? {
+        ...baseBody,
+        attachments: [
+          {
+            fileUrl: illustration.fileUrl,
+            fileId: illustration.id,
+            mimeType: "image/png",
+            title: `${opts.code}.png`,
+          },
+        ],
+      }
+    : baseBody;
 
-  const params = { calendarId, supportsAttachments: Boolean(driveFileId) };
-  if (opts.eventId) {
-    const res = await cal.events.patch({
-      ...params,
-      eventId: opts.eventId,
-      requestBody: body,
+  async function write(requestBody: typeof baseBody | typeof withAttachment) {
+    const attach = "attachments" in requestBody;
+    if (opts.eventId) {
+      const res = await calendar.events.patch({
+        calendarId: calId,
+        eventId: opts.eventId,
+        supportsAttachments: attach,
+        requestBody,
+      });
+      return res.data.id ?? opts.eventId;
+    }
+    const res = await calendar.events.insert({
+      calendarId: calId,
+      supportsAttachments: attach,
+      requestBody,
     });
-    return { eventId: res.data.id ?? opts.eventId, driveFileId };
+    return res.data.id ?? null;
   }
-  const res = await cal.events.insert({ ...params, requestBody: body });
-  return { eventId: res.data.id ?? null, driveFileId };
+
+  try {
+    const eventId = await write(withAttachment);
+    return { eventId, driveFileId };
+  } catch {
+    try {
+      const eventId = await write(baseBody);
+      return { eventId, driveFileId };
+    } catch {
+      return { eventId: null as string | null, driveFileId };
+    }
+  }
 }
 
 export async function deleteCalendarEvent(user: User, eventId: string | null) {
