@@ -1,10 +1,11 @@
-import { mkdir, writeFile, copyFile } from "node:fs/promises";
+import { mkdir, writeFile, copyFile, readdir } from "node:fs/promises";
 import { createReadStream, existsSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import OpenAI, { toFile } from "openai";
 import { env, openaiConfigured } from "../env.js";
 import { buildIllustrationPrompt, type PromptInput } from "./imagePrompt.js";
+import { cropIllustrationFile } from "./cropIllustration.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 export const uploadsDir = resolve(here, "../../uploads/illustrations");
@@ -27,11 +28,13 @@ async function saveImageResponse(
   const url = img.data?.[0]?.url;
   if (b64) {
     await writeFile(dest, Buffer.from(b64, "base64"));
+    await cropIllustrationFile(dest);
     return;
   }
   if (url) {
     const res = await fetch(url);
     await writeFile(dest, Buffer.from(await res.arrayBuffer()));
+    await cropIllustrationFile(dest);
     return;
   }
   throw new Error("Kein Bild von der KI erhalten");
@@ -79,7 +82,17 @@ export async function generateShiftIllustration(id: string, input: PromptInput) 
       throw new Error("Kein OpenAI-Key und kein Platzhalterbild vorhanden");
     }
     await copyFile(src, dest);
+    await cropIllustrationFile(dest);
   }
 
   return { path: `/uploads/illustrations/${filename}`, prompt };
+}
+
+export async function cropStoredIllustrations() {
+  await mkdir(uploadsDir, { recursive: true });
+  const files = await readdir(uploadsDir);
+  for (const name of files) {
+    if (!name.toLowerCase().endsWith(".png")) continue;
+    await cropIllustrationFile(resolve(uploadsDir, name)).catch(() => undefined);
+  }
 }

@@ -135,7 +135,7 @@ export function ShiftTypesPage() {
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         {types.map((t) => (
           <article key={t.id} className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-line">
-            <div className="aspect-square bg-canvas">
+            <div className="shift-cover aspect-square bg-canvas">
               {t.imagePath ? (
                 <img src={t.imagePath} alt={t.code} className="size-full object-cover" />
               ) : (
@@ -230,7 +230,7 @@ export function ShiftTypesPage() {
                 </label>
               </div>
               <div>
-                <div className="aspect-square overflow-hidden rounded-2xl bg-canvas ring-1 ring-line">
+                <div className="shift-cover aspect-square rounded-2xl bg-canvas ring-1 ring-line">
                   {editing.imagePath ? (
                     <img src={editing.imagePath} alt="" className="size-full object-cover" />
                   ) : (

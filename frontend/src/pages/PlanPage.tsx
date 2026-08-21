@@ -122,7 +122,7 @@ export function PlanPage() {
                   <Plus className="size-5 text-muted" />
                 </button>
               ) : (
-                <Link to={`/app/heute?date=${key}`} className="size-14 shrink-0 overflow-hidden rounded-xl bg-canvas">
+                <Link to={`/app/heute?date=${key}`} className="shift-cover size-14 shrink-0 rounded-xl bg-canvas">
                   {type?.imagePath ? (
                     <img src={type.imagePath} alt="" className="size-full object-cover" />
                   ) : (

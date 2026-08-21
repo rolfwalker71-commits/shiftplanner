@@ -13,6 +13,7 @@ import { shiftRoutes } from "./routes/shifts.js";
 import { pushRoutes } from "./routes/push.js";
 import { startReminderScheduler } from "./lib/reminders.js";
 import { configureWebPush } from "./lib/vapid.js";
+import { cropStoredIllustrations } from "./lib/images.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const uploadsRoot = resolve(here, "../uploads");
@@ -56,5 +57,6 @@ if (existsSync(frontendDist)) {
 }
 
 await app.listen({ port: env.API_PORT, host: "0.0.0.0" });
+await cropStoredIllustrations();
 await configureWebPush();
 startReminderScheduler();

@@ -252,7 +252,7 @@ function DayCell({
   return (
     <div
       ref={setNodeRef}
-      className={`relative overflow-hidden rounded-2xl bg-white ring-1 ${isOver ? "ring-navy" : today ? "ring-navy" : "ring-line"} ${week ? "min-h-72" : "aspect-square"} ${outside ? "opacity-45" : ""}`}
+      className={`shift-cover relative overflow-hidden rounded-2xl bg-white ring-1 ${isOver ? "ring-navy" : today ? "ring-navy" : "ring-line"} ${week ? "min-h-72" : "aspect-square"} ${outside ? "opacity-45" : ""}`}
     >
       {cover ? (
         <img src={cover} alt="" className="absolute inset-0 size-full object-cover" />

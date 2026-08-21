@@ -77,7 +77,7 @@ export function MonthListPage() {
               onClick={() => navigate(`/app/heute?date=${key}`)}
               className="flex items-center gap-3 rounded-2xl bg-white p-3 text-left shadow-sm ring-1 ring-line"
             >
-              <span className="size-14 shrink-0 overflow-hidden rounded-xl bg-canvas">
+              <span className="shift-cover size-14 shrink-0 rounded-xl bg-canvas">
                 {type?.imagePath ? (
                   <img src={type.imagePath} alt="" className="size-full object-cover" />
                 ) : (

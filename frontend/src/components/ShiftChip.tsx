@@ -14,11 +14,9 @@ export function ShiftChip({
       style={{ background: `${type.color}33` }}
     >
       {type.imagePath ? (
-        <img
-          src={type.imagePath}
-          alt=""
-          className={compact ? "size-6 rounded-md object-cover" : "size-8 rounded-lg object-cover"}
-        />
+        <span className={`shift-cover shrink-0 ${compact ? "size-6 rounded-md" : "size-8 rounded-lg"}`}>
+          <img src={type.imagePath} alt="" />
+        </span>
       ) : (
         <span
           className={compact ? "size-6 rounded-md" : "size-8 rounded-lg"}

@@ -77,7 +77,7 @@ export function DayViewPage() {
               className="w-[calc(100%-2rem)] shrink-0 snap-center px-4"
             >
               <div className="relative overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-line">
-                <div className="relative aspect-[3/4] min-h-[22rem] bg-canvas">
+                <div className="shift-cover relative aspect-[3/4] min-h-[22rem] bg-canvas">
                   {type?.imagePath ? (
                     <img src={type.imagePath} alt="" loading="lazy" className="absolute inset-0 size-full object-cover" />
                   ) : (
