@@ -22,7 +22,7 @@ export function LoginPage({
     <div className="grid min-h-dvh place-items-center px-4">
       <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-sm ring-1 ring-line">
         <img src="/logo.png" alt="" className="mb-4 size-12" />
-        <h1 className="text-[1.5rem] font-semibold tracking-tight">Arbeitsplan</h1>
+        <h1 className="text-[1.875rem] font-bold leading-snug tracking-tight">Arbeitsplan</h1>
         <p className="mt-2 text-[0.95rem] leading-snug text-muted">
           Persönliche Schichtplanung mit Google Kalender — Gästebetreuung, Service und
           Restaurant im Spital.
