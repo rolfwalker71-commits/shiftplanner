@@ -28,7 +28,7 @@ type Payload = {
 self.addEventListener("push", (event) => {
   const data = (event.data?.json() ?? {}) as Payload;
   event.waitUntil(
-    self.registration.showNotification(data.title ?? "Schichtklar", {
+    self.registration.showNotification(data.title ?? "Arbeitsplan", {
       body: data.body,
       icon: data.icon,
       image: data.image,

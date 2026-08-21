@@ -26,8 +26,8 @@ export function Layout({
     <div className="min-h-dvh bg-canvas">
       <header className="sticky top-0 z-20 flex items-center justify-between gap-4 border-b border-line bg-white/90 px-4 py-3 backdrop-blur">
         <div className="flex items-center gap-2">
-          <img src="/logo.svg" alt="" className="size-8 rounded-xl" />
-          <span className="text-[1.05rem] font-semibold tracking-tight">Schichtklar</span>
+          <img src="/logo.png" alt="" className="size-8" />
+          <span className="text-[1.05rem] font-semibold tracking-tight">Arbeitsplan</span>
         </div>
         <nav className="hidden items-center gap-1 md:flex">
           {links.map((l) => (

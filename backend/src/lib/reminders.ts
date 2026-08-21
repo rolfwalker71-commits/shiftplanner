@@ -60,14 +60,14 @@ function shiftBody(type: ShiftType, date: string) {
 
 export function reminderPayload(shift: ShiftWithType, opts?: { force?: boolean }) {
   const image = publicAsset(shift.shiftType.imagePath);
-  const icon = image ?? publicAsset("/logo.svg");
+  const icon = image ?? publicAsset("/logo-192.png");
   const prefix = opts?.force ? "Probe" : "Morgen";
   return {
     title: `${prefix}: ${shift.shiftType.code}`,
     body: shiftBody(shift.shiftType, shift.date),
     icon,
     image,
-    badge: publicAsset("/logo.svg"),
+    badge: publicAsset("/logo-192.png"),
     tag: `shift-${shift.id}`,
     data: { url: "/app" },
   };
