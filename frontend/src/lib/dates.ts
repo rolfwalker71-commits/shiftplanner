@@ -72,8 +72,39 @@ export function monthLabel(anchor: Date) {
   return formatDateRange(startOfMonth(anchor), endOfMonth(anchor));
 }
 
+export function asDate(d: Date | string) {
+  return typeof d === "string" ? parseISO(`${d}T12:00:00`) : d;
+}
+
 export function weekdayShort(d: Date) {
   return format(d, "EEEEEE", { locale: de });
+}
+
+export function weekdayLong(d: Date | string) {
+  return format(asDate(d), "EEEE", { locale: de });
+}
+
+export function monthTitle(d: Date) {
+  const label = format(d, "LLLL yyyy", { locale: de });
+  return label.charAt(0).toUpperCase() + label.slice(1);
+}
+
+export function listDayLabel(d: Date | string) {
+  return format(asDate(d), "EEEEEE dd.MM.yyyy", { locale: de });
+}
+
+export function weekDayCaption(d: Date) {
+  return format(d, "dd.MM.", { locale: de });
+}
+
+export function workLabel(start: string | null, end: string | null, allDay: boolean, breakMinutes: number) {
+  if (allDay || !start || !end) return "ganztags";
+  const pause = breakMinutes > 0 ? ` · Pause ${breakMinutes} Min` : "";
+  return `${formatTimeRange(start, end, false)} Uhr${pause}`;
+}
+
+export function dayWindow(center: Date, back: number, forward: number) {
+  return eachDayOfInterval({ start: addDays(center, -back), end: addDays(center, forward) });
 }
 
 export function netHours(

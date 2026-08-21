@@ -1,14 +1,28 @@
 import { NavLink, Outlet } from "react-router-dom";
 import { useEffect } from "react";
-import { CalendarDays, ClipboardList, HelpCircle, Settings } from "lucide-react";
+import {
+  Calendar,
+  CalendarDays,
+  ClipboardList,
+  HelpCircle,
+  MoreHorizontal,
+  Settings,
+} from "lucide-react";
 import type { Status } from "../types";
 import { syncPushIfGranted } from "../lib/push";
 
-const links = [
+const desktopLinks = [
   { to: "/app", label: "Kalender", icon: CalendarDays, end: true },
   { to: "/app/schichten", label: "Schichten", icon: ClipboardList },
   { to: "/app/hilfe", label: "Hilfe", icon: HelpCircle },
   { to: "/app/einstellungen", label: "Einstellungen", icon: Settings },
+];
+
+const mobileLinks = [
+  { to: "/app/heute", label: "Heute", icon: Calendar },
+  { to: "/app/planen", label: "Planen", icon: ClipboardList },
+  { to: "/app/monat", label: "Monat", icon: CalendarDays },
+  { to: "/app/mehr", label: "Mehr", icon: MoreHorizontal },
 ];
 
 export function Layout({
@@ -30,7 +44,7 @@ export function Layout({
           <span className="text-[1.375rem] font-bold leading-snug tracking-tight">Arbeitsplan</span>
         </div>
         <nav className="hidden items-center gap-1 md:flex">
-          {links.map((l) => (
+          {desktopLinks.map((l) => (
             <NavLink
               key={l.to}
               to={l.to}
@@ -55,21 +69,23 @@ export function Layout({
       </header>
 
       <main className="mx-auto max-w-7xl px-4 pb-28 pt-5 md:pb-8">
-        <Outlet />
+        <Outlet context={{ status, onLogout }} />
       </main>
 
       <nav
         className="fixed inset-x-0 bottom-0 z-30 md:hidden"
-        style={{ padding: "max(0.75rem, env(safe-area-inset-bottom)) max(0.75rem, env(safe-area-inset-right)) 0.75rem max(0.75rem, env(safe-area-inset-left))" }}
+        style={{
+          padding:
+            "max(0.75rem, env(safe-area-inset-bottom)) max(0.75rem, env(safe-area-inset-right)) 0.75rem max(0.75rem, env(safe-area-inset-left))",
+        }}
       >
         <div className="flex rounded-2xl bg-white p-1 shadow-lg ring-1 ring-line">
-          {links.map((l) => (
+          {mobileLinks.map((l) => (
             <NavLink
               key={l.to}
               to={l.to}
-              end={l.end}
               className={({ isActive }) =>
-                `flex min-h-11 flex-1 flex-col items-center justify-center gap-0.5 rounded-xl text-[0.7rem] ${
+                `flex min-h-11 flex-1 flex-col items-center justify-center gap-0.5 rounded-xl text-[0.7rem] leading-snug ${
                   isActive ? "bg-canvas font-medium" : "text-muted"
                 }`
               }

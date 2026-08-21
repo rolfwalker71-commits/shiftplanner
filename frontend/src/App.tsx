@@ -8,6 +8,16 @@ import { CalendarPage } from "./pages/CalendarPage";
 import { ShiftTypesPage } from "./pages/ShiftTypesPage";
 import { SettingsPage } from "./pages/SettingsPage";
 import { HelpPage } from "./pages/HelpPage";
+import { DayViewPage } from "./pages/DayViewPage";
+import { PlanPage } from "./pages/PlanPage";
+import { MonthListPage } from "./pages/MonthListPage";
+import { MorePage } from "./pages/MorePage";
+import { useMdUp } from "./hooks/useMdUp";
+
+function HomeEntry() {
+  const desktop = useMdUp();
+  return desktop ? <CalendarPage /> : <Navigate to="/app/heute" replace />;
+}
 
 export default function App() {
   const [status, setStatus] = useState<Status | null>(null);
@@ -36,7 +46,11 @@ export default function App() {
         path="/app"
         element={authed ? <Layout status={status} onLogout={async () => { await api.logout(); setStatus(await api.status()); }} /> : <Navigate to="/" replace />}
       >
-        <Route index element={<CalendarPage />} />
+        <Route index element={<HomeEntry />} />
+        <Route path="heute" element={<DayViewPage />} />
+        <Route path="planen" element={<PlanPage />} />
+        <Route path="monat" element={<MonthListPage />} />
+        <Route path="mehr" element={<MorePage />} />
         <Route path="schichten" element={<ShiftTypesPage />} />
         <Route path="hilfe" element={<HelpPage />} />
         <Route path="einstellungen" element={<SettingsPage status={status} onChange={() => api.status().then(setStatus)} />} />

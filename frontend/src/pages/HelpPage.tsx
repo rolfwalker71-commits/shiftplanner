@@ -5,7 +5,7 @@ const cards = [
   },
   {
     title: "Auf den Kalender ziehen",
-    text: "Neue Schicht aus der Leiste auf einen Tag ziehen. Zum Verschieben die Schicht auf einen anderen Tag ziehen. Löschen: die ×-Taste neben dem Code (F2, Frei…). Optionstaste beim Ablegen = duplizieren.",
+    text: "Am Computer: Schichtart auf einen Tag ziehen. Handy: unter Planen die Art antippen, dann den Tag. Löschen mit ×.",
   },
   {
     title: "Google Kalender",
@@ -24,8 +24,8 @@ const cards = [
     text: "Unter Einstellungen Benachrichtigungen aktivieren. Am Tag vor der Schicht um 18:00 kommt eine Nachricht mit Clay-Bild und Arbeitszeit. iPhone: App zuerst zum Home-Bildschirm hinzufügen, dann erlauben.",
   },
   {
-    title: "PWA",
-    text: "Zum Home-Bildschirm hinzufügen. Der Kalender bleibt als App nutzbar.",
+    title: "Handy und PWA",
+    text: "Unten: Heute (wischen), Planen (antippen, nicht ziehen), Monat (Liste). Schichtarten, Hilfe und Einstellungen liegen unter Mehr. Zum Home-Bildschirm hinzufügen.",
   },
   {
     title: "Nachtdienst",
