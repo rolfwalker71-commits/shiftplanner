@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", "Segoe UI", system-ui, sans-serif;
+  --color-canvas: #f6f7f9;
+  --color-ink: #1c2430;
+  --color-muted: #5b6573;
+  --color-line: #e6e8ec;
+  --color-navy: #1f3a5f;
+  --color-peach: #e8a87c;
+}
+
+html {
+  font-size: 112.5%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+#root {
+  min-height: 100dvh;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}

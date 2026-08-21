@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                  String      @id @default(cuid())
+  email               String      @unique
+  name                String?
+  googleId            String?     @unique
+  googleRefreshToken  String?
+  selectedCalendarId  String?
+  timezone            String      @default("Europe/Zurich")
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+  shiftTypes          ShiftType[]
+  shifts              Shift[]
+}
+
+model ShiftType {
+  id               String   @id @default(cuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  code             String
+  name             String
+  startTime        String?
+  endTime          String?
+  breakMinutes     Int      @default(0)
+  allDay           Boolean  @default(false)
+  color            String   @default("#E8A87C")
+  description      String   @default("")
+  showCodeInImage  Boolean  @default(false)
+  imagePath        String?
+  sortOrder        Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  shifts           Shift[]
+
+  @@unique([userId, code])
+}
+
+model Shift {
+  id             String    @id @default(cuid())
+  userId         String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  shiftTypeId    String
+  shiftType      ShiftType @relation(fields: [shiftTypeId], references: [id], onDelete: Cascade)
+  date           String
+  googleEventId  String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([userId, date])
+}

@@ -1,0 +1,26 @@
+services:
+  schichtklar:
+    build: .
+    image: schichtklar:local
+    ports:
+      - "8080:8080"
+    environment:
+      API_PORT: "8080"
+      APP_URL: http://localhost:8080
+      DEMO_MODE: "true"
+      SESSION_SECRET: ${SESSION_SECRET:-change-me-in-production-please}
+      DATABASE_URL: file:../data/schichtklar.db
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      GOOGLE_REDIRECT_URI: ${GOOGLE_REDIRECT_URI:-http://localhost:8080/api/auth/google/callback}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_IMAGE_MODEL: ${OPENAI_IMAGE_MODEL:-gpt-image-1}
+      TZ: Europe/Zurich
+    volumes:
+      - schichtklar-data:/app/backend/data
+      - schichtklar-uploads:/app/backend/uploads
+    restart: unless-stopped
+
+volumes:
+  schichtklar-data:
+  schichtklar-uploads:
