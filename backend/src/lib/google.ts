@@ -1,7 +1,10 @@
+import { createReadStream, existsSync } from "node:fs";
+import { resolve } from "node:path";
 import { google } from "googleapis";
 import { env, googleConfigured } from "../env.js";
 import type { User } from "@prisma/client";
 import { prisma } from "../db.js";
+import { uploadsDir } from "./images.js";
 
 export function oauthClient() {
   return new google.auth.OAuth2(
@@ -16,6 +19,7 @@ export const GOOGLE_SCOPES = [
   "email",
   "profile",
   "https://www.googleapis.com/auth/calendar",
+  "https://www.googleapis.com/auth/drive.file",
 ];
 
 export function authUrl() {
@@ -26,10 +30,16 @@ export function authUrl() {
   });
 }
 
-async function calendarClient(user: User) {
+function userAuth(user: User) {
   if (!googleConfigured || !user.googleRefreshToken) return null;
   const auth = oauthClient();
   auth.setCredentials({ refresh_token: user.googleRefreshToken });
+  return auth;
+}
+
+async function calendarClient(user: User) {
+  const auth = userAuth(user);
+  if (!auth) return null;
   return google.calendar({ version: "v3", auth });
 }
 
@@ -70,6 +80,50 @@ function addDays(iso: string, n: number) {
   return d.toISOString().slice(0, 10);
 }
 
+function localIllustration(imagePath?: string | null) {
+  if (!imagePath) return null;
+  const name = imagePath.split("/").pop();
+  if (!name) return null;
+  const file = resolve(uploadsDir, name);
+  return existsSync(file) ? file : null;
+}
+
+async function ensureDriveIllustration(opts: {
+  user: User;
+  code: string;
+  imagePath?: string | null;
+  existingId?: string | null;
+}) {
+  const auth = userAuth(opts.user);
+  const file = localIllustration(opts.imagePath);
+  if (!auth || !file) return opts.existingId ?? null;
+  const drive = google.drive({ version: "v3", auth });
+  if (opts.existingId) {
+    try {
+      await drive.files.get({ fileId: opts.existingId, fields: "id" });
+      return opts.existingId;
+    } catch {
+      /* upload again */
+    }
+  }
+  try {
+    const created = await drive.files.create({
+      requestBody: {
+        name: `Schichtklar-${opts.code}.png`,
+        mimeType: "image/png",
+      },
+      media: {
+        mimeType: "image/png",
+        body: createReadStream(file),
+      },
+      fields: "id",
+    });
+    return created.data.id ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export async function upsertCalendarEvent(opts: {
   user: User;
   eventId?: string | null;
@@ -80,14 +134,34 @@ export async function upsertCalendarEvent(opts: {
   endTime: string | null;
   allDay: boolean;
   description?: string;
+  imagePath?: string | null;
+  googleDriveFileId?: string | null;
 }) {
   const cal = await calendarClient(opts.user);
   const calendarId = opts.user.selectedCalendarId;
-  if (!cal || !calendarId) return null;
+  if (!cal || !calendarId) return { eventId: null as string | null, driveFileId: opts.googleDriveFileId ?? null };
 
+  const driveFileId = await ensureDriveIllustration({
+    user: opts.user,
+    code: opts.code,
+    imagePath: opts.imagePath,
+    existingId: opts.googleDriveFileId,
+  });
+
+  const timeLabel = opts.allDay || !opts.startTime
+    ? "ganztags"
+    : `${opts.startTime}–${opts.endTime}`;
   const body = {
     summary: `${opts.code} · ${opts.name}`,
-    description: opts.description || "Geplant mit Schichtklar",
+    description: [
+      `${opts.code} · ${opts.name}`,
+      timeLabel,
+      opts.description?.trim() || "",
+      driveFileId ? "Schichtbild: siehe Anhang." : "",
+      "Geplant mit Schichtklar",
+    ]
+      .filter(Boolean)
+      .join("\n"),
     ...eventTimes(
       opts.date,
       opts.startTime,
@@ -95,18 +169,30 @@ export async function upsertCalendarEvent(opts: {
       opts.allDay,
       opts.user.timezone,
     ),
+    ...(driveFileId
+      ? {
+          attachments: [
+            {
+              fileId: driveFileId,
+              mimeType: "image/png",
+              title: `${opts.code}.png`,
+            },
+          ],
+        }
+      : {}),
   };
 
+  const params = { calendarId, supportsAttachments: Boolean(driveFileId) };
   if (opts.eventId) {
     const res = await cal.events.patch({
-      calendarId,
+      ...params,
       eventId: opts.eventId,
       requestBody: body,
     });
-    return res.data.id ?? opts.eventId;
+    return { eventId: res.data.id ?? opts.eventId, driveFileId };
   }
-  const res = await cal.events.insert({ calendarId, requestBody: body });
-  return res.data.id ?? null;
+  const res = await cal.events.insert({ ...params, requestBody: body });
+  return { eventId: res.data.id ?? null, driveFileId };
 }
 
 export async function deleteCalendarEvent(user: User, eventId: string | null) {

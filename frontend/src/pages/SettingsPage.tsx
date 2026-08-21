@@ -30,21 +30,23 @@ export function SettingsPage({
         <h2 className="font-medium">Google-Konto</h2>
         <p className="mt-1 text-[0.875rem] text-muted">
           {status.user?.googleConnected
-            ? `Verbunden als ${status.user.email}`
+            ? `Verbunden als ${status.user.email}. Wenn das Bild nicht am Event hängt: erneut „Mit Google verbinden“, damit der Drive-Anhang erlaubt ist.`
             : status.googleConfigured
               ? "Noch nicht mit Google verbunden."
               : "Google OAuth ist nicht konfiguriert. Du kannst lokal planen; Events werden nicht synchronisiert."}
         </p>
-        {status.googleConfigured && !status.user?.googleConnected ? (
+        {status.googleConfigured ? (
           <a href="/api/auth/google" className="mt-3 inline-flex h-11 items-center rounded-full bg-navy px-4 text-white">
-            Mit Google verbinden
+            {status.user?.googleConnected ? "Google-Rechte aktualisieren" : "Mit Google verbinden"}
           </a>
         ) : null}
       </section>
       <section className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-line">
         <h2 className="font-medium">Zielkalender</h2>
-        <p className="mt-1 text-[0.875rem] text-muted">
-          Neue und verschobene Schichten werden in diesem Kalender aktualisiert.
+        <p className="mt-1 text-[0.875rem] leading-snug text-muted">
+          Neue und verschobene Schichten werden sofort in diesem Kalender angelegt oder verschoben.
+          Gelöschte Schichten verschwinden dort ebenfalls. Das Clay-Bild hängt Google als Anhang
+          am Event — in der Monatsansicht kann Google keine eigenen Kachelbilder zeigen.
         </p>
         <select
           className="mt-3 h-11 w-full rounded-xl bg-canvas px-3"

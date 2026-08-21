@@ -31,3 +31,12 @@ textarea,
 select {
   font: inherit;
 }
+
+button.shift-delete {
+  background-color: #111;
+  color: #fff;
+}
+
+button.shift-code {
+  font-weight: 700;
+}

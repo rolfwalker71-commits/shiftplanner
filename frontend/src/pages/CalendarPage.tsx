@@ -12,7 +12,7 @@ import {
 } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { addMonths, addWeeks, isSameMonth, startOfMonth } from "date-fns";
-import { CalendarDays, CalendarRange, ChevronLeft, ChevronRight } from "lucide-react";
+import { CalendarDays, CalendarRange, ChevronDown, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { api } from "../api";
 import type { Shift, ShiftType } from "../types";
 import { formatDate, formatDateRange, iso, monthGrid, monthLabel, weekDays, weekdayShort } from "../lib/dates";
@@ -25,6 +25,25 @@ export function CalendarPage() {
   const [shifts, setShifts] = useState<Shift[]>([]);
   const [active, setActive] = useState<{ kind: "type" | "shift"; type: ShiftType; shiftId?: string } | null>(null);
   const [toast, setToast] = useState<string | null>(null);
+  const [typesOpen, setTypesOpen] = useState(() => {
+    try {
+      return localStorage.getItem("schichtklar-types-open") !== "0";
+    } catch {
+      return true;
+    }
+  });
+
+  function toggleTypes() {
+    setTypesOpen((open) => {
+      const next = !open;
+      try {
+        localStorage.setItem("schichtklar-types-open", next ? "1" : "0");
+      } catch {
+        /* ignore */
+      }
+      return next;
+    });
+  }
 
   const range = useMemo(() => {
     if (view === "week") {
@@ -100,17 +119,31 @@ export function CalendarPage() {
       onDragCancel={() => setActive(null)}
     >
       <div className="flex flex-col gap-4 lg:flex-row">
-        <aside className="lg:w-64">
-          <div className="rounded-2xl bg-white p-3 shadow-sm ring-1 ring-line">
-            <div className="mb-2 flex items-center justify-between">
-              <h2 className="text-[1rem] font-semibold">Schichtarten</h2>
-            </div>
-            <div className="flex gap-2 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible">
-              {types.map((t) => (
-                <TypeDrag key={t.id} type={t} />
-              ))}
-            </div>
-            <p className="mt-2 text-[0.75rem] text-muted">Auf einen Tag ziehen · Option halten = duplizieren</p>
+        <aside className={typesOpen ? "lg:w-64 lg:shrink-0" : "lg:w-11 lg:shrink-0"}>
+          <div className="rounded-2xl bg-white p-2 shadow-sm ring-1 ring-line lg:p-3">
+            <button
+              type="button"
+              className="flex min-h-11 w-full items-center justify-between gap-2 rounded-xl px-2 text-left"
+              onClick={toggleTypes}
+              aria-expanded={typesOpen}
+            >
+              <span className={`text-[1rem] font-semibold leading-snug ${typesOpen ? "" : "lg:sr-only"}`}>
+                Schichtarten
+              </span>
+              <ChevronDown className={`size-4 shrink-0 transition-transform ${typesOpen ? "" : "lg:-rotate-90"}`} />
+            </button>
+            {typesOpen ? (
+              <>
+                <div className="mt-2 flex gap-2 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible">
+                  {types.map((t) => (
+                    <TypeDrag key={t.id} type={t} />
+                  ))}
+                </div>
+                <p className="mt-2 px-1 text-[0.75rem] leading-snug text-muted">
+                  Ziehen zum Verschieben · × oben rechts zum Löschen
+                </p>
+              </>
+            ) : null}
           </div>
         </aside>
 
@@ -144,7 +177,7 @@ export function CalendarPage() {
               <div key={d} className="py-1">{d}</div>
             ))}
           </div>
-          <div className={`grid grid-cols-7 gap-1.5 ${view === "week" ? "min-h-[28rem]" : ""}`}>
+          <div className={`grid grid-cols-7 gap-1.5 ${view === "week" ? "auto-rows-[minmax(8rem,1fr)]" : ""}`}>
             {days.map((d) => (
               <DayCell
                 key={iso(d)}
@@ -212,49 +245,86 @@ function DayCell({
   const id = `day:${iso(date)}`;
   const { setNodeRef, isOver } = useDroppable({ id });
   const today = iso(date) === iso(new Date());
+  const cover = shifts.find((s) => s.shiftType.imagePath)?.shiftType.imagePath ?? null;
+  const primary = shifts[0];
   return (
     <div
       ref={setNodeRef}
-      className={`min-h-20 rounded-2xl bg-white p-1.5 ring-1 ${isOver ? "ring-navy" : today ? "ring-navy/60" : "ring-line"} ${week ? "min-h-72" : ""} ${outside ? "opacity-45" : ""}`}
+      className={`relative overflow-hidden rounded-2xl bg-white ring-1 ${isOver ? "ring-navy" : today ? "ring-navy" : "ring-line"} ${week ? "min-h-72" : "aspect-square"} ${outside ? "opacity-45" : ""}`}
     >
+      {cover ? (
+        <img src={cover} alt="" className="absolute inset-0 size-full object-cover" />
+      ) : null}
+
       <div
-        className={`mb-1 break-words text-[0.75rem] leading-snug ${today ? "font-semibold text-navy" : "text-muted"}`}
+        className="absolute left-1 top-1 z-10 max-w-[calc(100%-2.5rem)] rounded-md bg-white/75 px-1 py-0.5 text-[0.7rem] font-bold leading-snug break-words text-ink"
         title={formatDate(date)}
       >
         {formatDate(date)}
         <span className="sr-only"> {weekdayShort(date)}</span>
       </div>
-      <div className="flex flex-col gap-1">
-        {shifts.map((s) => (
-          <PlacedShift key={s.id} shift={s} onDelete={() => onDelete(s.id)} />
-        ))}
-      </div>
+
+      {primary ? (
+        <button
+          type="button"
+          className="shift-delete absolute right-0 top-0 z-10 grid size-7 place-items-center text-white"
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={() => onDelete(primary.id)}
+          aria-label={`${primary.shiftType.code} löschen`}
+        >
+          <X className="size-3.5" strokeWidth={2.5} />
+        </button>
+      ) : null}
+
+      {shifts.length > 0 ? (
+        <div className="absolute inset-x-0 bottom-0 z-10 bg-white/45 px-1 py-px">
+          {shifts.map((s) => (
+            <PlacedShift key={s.id} shift={s} extraDelete={s.id !== primary?.id} onDelete={() => onDelete(s.id)} />
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }
 
-function PlacedShift({ shift, onDelete }: { shift: Shift; onDelete: () => void }) {
+function PlacedShift({
+  shift,
+  extraDelete,
+  onDelete,
+}: {
+  shift: Shift;
+  extraDelete: boolean;
+  onDelete: () => void;
+}) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: `shift:${shift.id}`,
   });
   return (
     <div
-      ref={setNodeRef}
-      className="group relative"
+      className="flex items-center justify-between gap-1"
       style={{ transform: CSS.Translate.toString(transform), opacity: isDragging ? 0.4 : 1 }}
-      {...listeners}
-      {...attributes}
     >
-      <ShiftChip type={shift.shiftType} compact />
       <button
+        ref={setNodeRef}
         type="button"
-        className="absolute -right-1 -top-1 hidden size-5 place-items-center rounded-full bg-white text-[0.7rem] ring-1 ring-line group-hover:grid"
-        onPointerDown={(e) => e.stopPropagation()}
-        onClick={onDelete}
-        aria-label="Entfernen"
+        className="shift-code min-w-0 flex-1 truncate bg-transparent px-0 py-0 text-center text-[0.625rem] leading-none text-ink"
+        aria-label={`${shift.shiftType.code} verschieben`}
+        {...listeners}
+        {...attributes}
       >
-        ×
+        {shift.shiftType.code}
       </button>
+      {extraDelete ? (
+        <button
+          type="button"
+          className="shrink-0 text-[0.7rem] font-bold leading-none text-ink"
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={onDelete}
+          aria-label={`${shift.shiftType.code} löschen`}
+        >
+          ×
+        </button>
+      ) : null}
     </div>
   );
 }

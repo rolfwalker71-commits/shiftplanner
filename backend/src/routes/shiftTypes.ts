@@ -105,7 +105,7 @@ export async function shiftTypeRoutes(app: FastifyInstance) {
       const { path, prompt } = await generateShiftIllustration(id, t);
       const updated = await prisma.shiftType.update({
         where: { id },
-        data: { imagePath: path },
+        data: { imagePath: path, googleDriveFileId: null },
       });
       return { ...updated, prompt };
     } catch (err) {

@@ -5,11 +5,11 @@ const cards = [
   },
   {
     title: "Auf den Kalender ziehen",
-    text: "Schichtart aus der Leiste auf einen Tag legen. Bestehende Schichten zwischen Tagen verschieben. Optionstaste = duplizieren.",
+    text: "Neue Schicht aus der Leiste auf einen Tag ziehen. Zum Verschieben die Schicht auf einen anderen Tag ziehen. Löschen: die ×-Taste neben dem Code (F2, Frei…). Optionstaste beim Ablegen = duplizieren.",
   },
   {
     title: "Google Kalender",
-    text: "Nach dem Verbinden erscheint jedes Ablegen oder Verschieben sofort im gewählten Workspace-Kalender.",
+    text: "Sofort beim Ablegen, Verschieben oder Löschen — wenn Google verbunden und ein Zielkalender gewählt ist. Das Clay-Bild wird als Anhang am Event mitgeschickt. Google zeigt es nicht als Kachel im Raster, nur in den Event-Details.",
   },
   {
     title: "KI-Illustration",
