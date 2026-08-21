@@ -43,7 +43,8 @@ Ohne `OPENAI_API_KEY` kopiert die App passende Platzhalter aus `backend/assets/`
 3. APIs: Calendar API, Drive (nur Dateien der App) + OAuth-Scopes `openid email profile https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/drive.file`  
 4. `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI` in `.env`  
 5. `DEMO_MODE=false` wenn nur Google-Login gewünscht  
-6. In der App unter Einstellungen den Zielkalender wählen. Nach dem Drive-Scope ggf. „Google-Rechte aktualisieren“.
+6. `ALLOWED_EMAILS` mit Komma getrennten Adressen (z. B. `valentyna@valentoys.ch`) — nur diese Konten dürfen sich anmelden  
+7. In der App unter Einstellungen den Zielkalender wählen. Nach dem Drive-Scope ggf. „Google-Rechte aktualisieren“.
 
 Beim Ablegen, Verschieben oder Löschen einer Schicht wird das Event sofort im gewählten Kalender angelegt, verschoben oder entfernt. Das Clay-Bild wird als Drive-Anhang ans Event gehängt (sichtbar in den Event-Details, nicht als Kachel im Google-Raster). Nachtdienste über Mitternacht (Ende vor Start) liegen auf zwei Kalendertagen.
 

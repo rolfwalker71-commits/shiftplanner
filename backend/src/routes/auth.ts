@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import { env, googleConfigured } from "../env.js";
+import { allowedEmails, env, googleConfigured, isEmailAllowed } from "../env.js";
 import { prisma } from "../db.js";
 import { setSession, clearSession, requireUser, getUser } from "../session.js";
 import { authUrl, oauthClient, listCalendars, saveGoogleTokens } from "../lib/google.js";
@@ -41,31 +41,39 @@ export async function authRoutes(app: FastifyInstance) {
     if (!googleConfigured) {
       return reply.code(400).send({ error: "Google OAuth ist nicht konfiguriert" });
     }
-    return reply.redirect(authUrl());
+    const hint = allowedEmails.length === 1 ? allowedEmails[0] : undefined;
+    return reply.redirect(authUrl(hint));
   });
 
   app.get("/api/auth/google/callback", async (req, reply) => {
     const code = (req.query as { code?: string }).code;
     if (!code) return reply.redirect(`${env.APP_URL}/?error=oauth`);
-    const client = oauthClient();
-    const { tokens } = await client.getToken(code);
-    client.setCredentials(tokens);
-    const ticket = await client.verifyIdToken({
-      idToken: tokens.id_token!,
-      audience: env.GOOGLE_CLIENT_ID,
-    });
-    const payload = ticket.getPayload();
-    if (!payload?.sub || !payload.email) {
+    try {
+      const client = oauthClient();
+      const { tokens } = await client.getToken(code);
+      client.setCredentials(tokens);
+      const ticket = await client.verifyIdToken({
+        idToken: tokens.id_token!,
+        audience: env.GOOGLE_CLIENT_ID,
+      });
+      const payload = ticket.getPayload();
+      if (!payload?.sub || !payload.email) {
+        return reply.redirect(`${env.APP_URL}/?error=oauth`);
+      }
+      if (!isEmailAllowed(payload.email)) {
+        return reply.redirect(`${env.APP_URL}/?error=forbidden`);
+      }
+      const user = await saveGoogleTokens({
+        googleId: payload.sub,
+        email: payload.email,
+        name: payload.name,
+        refreshToken: tokens.refresh_token,
+      });
+      setSession(reply, user.id);
+      return reply.redirect(`${env.APP_URL}/app`);
+    } catch {
       return reply.redirect(`${env.APP_URL}/?error=oauth`);
     }
-    const user = await saveGoogleTokens({
-      googleId: payload.sub,
-      email: payload.email,
-      name: payload.name,
-      refreshToken: tokens.refresh_token,
-    });
-    setSession(reply, user.id);
-    return reply.redirect(`${env.APP_URL}/app`);
   });
 
   app.post("/api/auth/logout", async (_req, reply) => {

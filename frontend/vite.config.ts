@@ -10,6 +10,10 @@ export default defineConfig({
     VitePWA({
       registerType: "autoUpdate",
       includeAssets: ["logo.svg"],
+      workbox: {
+        navigateFallback: "index.html",
+        navigateFallbackDenylist: [/^\/api\//, /^\/uploads\//],
+      },
       manifest: {
         name: "Schichtklar",
         short_name: "Schichtklar",

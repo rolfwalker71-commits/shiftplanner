@@ -22,11 +22,12 @@ export const GOOGLE_SCOPES = [
   "https://www.googleapis.com/auth/drive.file",
 ];
 
-export function authUrl() {
+export function authUrl(loginHint?: string) {
   return oauthClient().generateAuthUrl({
     access_type: "offline",
     prompt: "consent",
     scope: GOOGLE_SCOPES,
+    ...(loginHint ? { login_hint: loginHint } : {}),
   });
 }
 
