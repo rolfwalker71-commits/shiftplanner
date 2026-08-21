@@ -18,6 +18,9 @@ const schema = z.object({
   OPENAI_API_KEY: z.string().optional().default(""),
   OPENAI_IMAGE_MODEL: z.string().default("gpt-image-1"),
   TZ: z.string().default("Europe/Zurich"),
+  NOTIFY_HOUR: z.coerce.number().int().min(0).max(23).default(18),
+  VAPID_PUBLIC_KEY: z.string().optional().default(""),
+  VAPID_PRIVATE_KEY: z.string().optional().default(""),
 });
 
 export const env = schema.parse(process.env);

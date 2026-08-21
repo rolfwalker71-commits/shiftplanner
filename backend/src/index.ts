@@ -10,6 +10,9 @@ import { env } from "./env.js";
 import { authRoutes } from "./routes/auth.js";
 import { shiftTypeRoutes } from "./routes/shiftTypes.js";
 import { shiftRoutes } from "./routes/shifts.js";
+import { pushRoutes } from "./routes/push.js";
+import { startReminderScheduler } from "./lib/reminders.js";
+import { configureWebPush } from "./lib/vapid.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const uploadsRoot = resolve(here, "../uploads");
@@ -35,6 +38,7 @@ await app.register(staticFiles, {
 await app.register(authRoutes);
 await app.register(shiftTypeRoutes);
 await app.register(shiftRoutes);
+await app.register(pushRoutes);
 
 app.get("/api/health", async () => ({ ok: true }));
 
@@ -52,3 +56,5 @@ if (existsSync(frontendDist)) {
 }
 
 await app.listen({ port: env.API_PORT, host: "0.0.0.0" });
+await configureWebPush();
+startReminderScheduler();

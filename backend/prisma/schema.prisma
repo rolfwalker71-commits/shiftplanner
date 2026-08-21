@@ -19,6 +19,7 @@ model User {
   updatedAt           DateTime    @updatedAt
   shiftTypes          ShiftType[]
   shifts              Shift[]
+  pushSubscriptions   PushSubscription[]
 }
 
 model ShiftType {
@@ -54,6 +55,32 @@ model Shift {
   googleEventId  String?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
+  reminders      ShiftReminder[]
 
   @@index([userId, date])
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+}
+
+model ShiftReminder {
+  id      String   @id @default(cuid())
+  shiftId String
+  shift   Shift    @relation(fields: [shiftId], references: [id], onDelete: Cascade)
+  kind    String   @default("day_before")
+  sentAt  DateTime @default(now())
+
+  @@unique([shiftId, kind])
+}
+
+model AppMeta {
+  key   String @id
+  value String
 }

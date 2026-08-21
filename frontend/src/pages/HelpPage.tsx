@@ -20,6 +20,10 @@ const cards = [
     text: "Die Bildbeschreibung steuert Ort und Licht: z. B. „Tablett ins Zimmer, Abendlicht“ oder „voller Speisesaal“. Ohne Text: Morgen Speisesaal, Nachmittag Gang/Zimmer, Abend Zimmerservice.",
   },
   {
+    title: "Erinnerung am Vortag",
+    text: "Unter Einstellungen Benachrichtigungen aktivieren. Am Tag vor der Schicht um 18:00 kommt eine Nachricht mit Clay-Bild und Arbeitszeit. iPhone: App zuerst zum Home-Bildschirm hinzufügen, dann erlauben.",
+  },
+  {
     title: "PWA",
     text: "Zum Home-Bildschirm hinzufügen. Der Kalender bleibt als App nutzbar.",
   },

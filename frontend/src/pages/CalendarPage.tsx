@@ -17,6 +17,7 @@ import { api } from "../api";
 import type { Shift, ShiftType } from "../types";
 import { formatDate, formatDateRange, iso, monthGrid, monthLabel, weekDays, weekdayShort } from "../lib/dates";
 import { ShiftChip } from "../components/ShiftChip";
+import { enablePush, pushSupported } from "../lib/push";
 
 export function CalendarPage() {
   const [anchor, setAnchor] = useState(() => new Date());
@@ -148,6 +149,7 @@ export function CalendarPage() {
         </aside>
 
         <section className="min-w-0 flex-1">
+          <NotifyPrompt />
           <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <button type="button" className="grid size-10 place-items-center rounded-full hover:bg-white" onClick={() => setAnchor(view === "month" ? addMonths(anchor, -1) : addWeeks(anchor, -1))} aria-label="Zurück">
@@ -325,6 +327,64 @@ function PlacedShift({
           ×
         </button>
       ) : null}
+    </div>
+  );
+}
+
+function NotifyPrompt() {
+  const [show, setShow] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    if (!pushSupported()) return;
+    if (Notification.permission !== "default") return;
+    try {
+      if (localStorage.getItem("schichtklar-notify-dismiss") === "1") return;
+    } catch {
+      /* ignore */
+    }
+    setShow(true);
+  }, []);
+
+  if (!show) return null;
+
+  return (
+    <div className="mb-3 flex flex-col gap-2 rounded-2xl bg-white p-3 shadow-sm ring-1 ring-line sm:flex-row sm:items-center sm:justify-between">
+      <p className="min-w-0 text-[0.875rem] leading-snug text-ink">
+        Erinnerung am Vortag mit Bild und Arbeitszeit — einmalig erlauben.
+      </p>
+      <div className="flex shrink-0 gap-2">
+        <button
+          type="button"
+          className="inline-flex h-11 items-center rounded-full bg-navy px-4 text-white disabled:opacity-50"
+          disabled={busy}
+          onClick={async () => {
+            setBusy(true);
+            try {
+              await enablePush();
+              setShow(false);
+            } catch {
+              setBusy(false);
+            }
+          }}
+        >
+          Erlauben
+        </button>
+        <button
+          type="button"
+          className="inline-flex h-11 items-center rounded-full px-3 text-muted"
+          onClick={() => {
+            try {
+              localStorage.setItem("schichtklar-notify-dismiss", "1");
+            } catch {
+              /* ignore */
+            }
+            setShow(false);
+          }}
+        >
+          Später
+        </button>
+      </div>
     </div>
   );
 }

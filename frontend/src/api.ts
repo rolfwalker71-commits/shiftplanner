@@ -57,4 +57,16 @@ export const api = {
     ),
   saveSettings: (body: { selectedCalendarId?: string; timezone?: string }) =>
     req("/api/settings", { method: "PUT", body: JSON.stringify(body) }),
+  pushKey: () => req<{ publicKey: string }>("/api/push/vapid-public-key"),
+  pushStatus: () => req<{ subscribed: boolean; devices: number }>("/api/push/status"),
+  pushSubscribe: (body: { endpoint: string; keys: { p256dh: string; auth: string } }) =>
+    req<{ ok: boolean }>("/api/push/subscribe", { method: "POST", body: JSON.stringify(body) }),
+  pushUnsubscribe: (endpoint?: string) =>
+    req<{ ok: boolean }>(
+      endpoint
+        ? `/api/push/subscribe?endpoint=${encodeURIComponent(endpoint)}`
+        : "/api/push/subscribe",
+      { method: "DELETE" },
+    ),
+  pushTest: () => req<{ ok: boolean }>("/api/push/test", { method: "POST" }),
 };

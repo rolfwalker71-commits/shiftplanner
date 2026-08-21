@@ -1,6 +1,8 @@
 import { NavLink, Outlet } from "react-router-dom";
+import { useEffect } from "react";
 import { CalendarDays, ClipboardList, HelpCircle, Settings } from "lucide-react";
 import type { Status } from "../types";
+import { syncPushIfGranted } from "../lib/push";
 
 const links = [
   { to: "/app", label: "Kalender", icon: CalendarDays, end: true },
@@ -16,6 +18,10 @@ export function Layout({
   status: Status;
   onLogout: () => void;
 }) {
+  useEffect(() => {
+    syncPushIfGranted().catch(() => undefined);
+  }, []);
+
   return (
     <div className="min-h-dvh bg-canvas">
       <header className="sticky top-0 z-20 flex items-center justify-between gap-4 border-b border-line bg-white/90 px-4 py-3 backdrop-blur">

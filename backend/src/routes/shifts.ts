@@ -6,6 +6,7 @@ import {
   deleteCalendarEvent,
   upsertCalendarEvent,
 } from "../lib/google.js";
+import { notifyShiftIfDue } from "../lib/reminders.js";
 
 const createSchema = z.object({
   shiftTypeId: z.string(),
@@ -59,7 +60,7 @@ export async function shiftRoutes(app: FastifyInstance) {
       });
     }
 
-    return prisma.shift.create({
+    const created = await prisma.shift.create({
       data: {
         userId: user.id,
         shiftTypeId: type.id,
@@ -68,6 +69,8 @@ export async function shiftRoutes(app: FastifyInstance) {
       },
       include: { shiftType: true },
     });
+    notifyShiftIfDue(created.id).catch(() => undefined);
+    return created;
   });
 
   app.patch("/api/shifts/:id", async (req, reply) => {
@@ -102,11 +105,14 @@ export async function shiftRoutes(app: FastifyInstance) {
       });
     }
 
-    return prisma.shift.update({
+    await prisma.shiftReminder.deleteMany({ where: { shiftId: id } });
+    const updated = await prisma.shift.update({
       where: { id },
       data: { date: parsed.data.date, googleEventId: eventId ?? shift.googleEventId },
       include: { shiftType: true },
     });
+    notifyShiftIfDue(updated.id).catch(() => undefined);
+    return updated;
   });
 
   app.delete("/api/shifts/:id", async (req, reply) => {

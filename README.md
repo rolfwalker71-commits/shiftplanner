@@ -48,6 +48,8 @@ Ohne `OPENAI_API_KEY` kopiert die App passende Platzhalter aus `backend/assets/`
 
 Beim Ablegen, Verschieben oder Löschen einer Schicht wird das Event sofort im gewählten Kalender angelegt, verschoben oder entfernt. Das Clay-Bild wird als Drive-Anhang ans Event gehängt (sichtbar in den Event-Details, nicht als Kachel im Google-Raster). Nachtdienste über Mitternacht (Ende vor Start) liegen auf zwei Kalendertagen.
 
+Am Tag vor der Schicht (18:00 Uhr Ortszeit) sendet die App eine Push-Nachricht mit Clay-Bild und Arbeitszeit. VAPID-Schlüssel legt die App beim ersten Start selbst an und speichert sie in der Datenbank. Unter Einstellungen „Erinnerungen aktivieren“, auf dem iPhone zuerst zum Home-Bildschirm hinzufügen.
+
 ## Docker
 
 ```bash

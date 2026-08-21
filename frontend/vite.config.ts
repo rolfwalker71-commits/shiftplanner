@@ -8,11 +8,13 @@ export default defineConfig({
     react(),
     tailwindcss(),
     VitePWA({
+      strategies: "injectManifest",
+      srcDir: "src",
+      filename: "sw.ts",
       registerType: "autoUpdate",
       includeAssets: ["logo.svg"],
-      workbox: {
-        navigateFallback: "index.html",
-        navigateFallbackDenylist: [/^\/api\//, /^\/uploads\//],
+      injectManifest: {
+        globPatterns: ["**/*.{js,css,html,svg,png,woff2}"],
       },
       manifest: {
         name: "Schichtklar",
