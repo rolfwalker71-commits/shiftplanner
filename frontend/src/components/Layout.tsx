@@ -7,6 +7,7 @@ import {
   HelpCircle,
   MoreHorizontal,
   Settings,
+  Upload,
 } from "lucide-react";
 import type { Status } from "../types";
 import { syncPushIfGranted } from "../lib/push";
@@ -14,6 +15,7 @@ import { syncPushIfGranted } from "../lib/push";
 const desktopLinks = [
   { to: "/app", label: "Kalender", icon: CalendarDays, end: true },
   { to: "/app/schichten", label: "Schichten", icon: ClipboardList },
+  { to: "/app/import", label: "Einlesen", icon: Upload },
   { to: "/app/hilfe", label: "Hilfe", icon: HelpCircle },
   { to: "/app/einstellungen", label: "Einstellungen", icon: Settings },
 ];
