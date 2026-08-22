@@ -104,9 +104,9 @@ export function ImportPage() {
     <div className="mx-auto flex max-w-xl flex-col gap-3">
       <h1 className="text-[1.25rem] font-bold leading-snug">Dienstplan einlesen</h1>
       <p className="text-[0.875rem] leading-snug text-muted">
-        PDF vom Monatsanfang hochladen. Danach siehst du jeden Tag mit dem erkannten Zeichen.
-        Falsch gelesene Tage kannst du einzeln korrigieren — oder alles so übernehmen.
-        Aufeinanderfolgende Punkte sind einzelne freie Tage. Die Palme ist Ferien.
+        PDF vom Monatsanfang hochladen. Die ganze Zeile wird per Bild-KI gelesen
+        (S2, S4, F2, Punkt = frei, Palme = Ferien). Danach siehst du jeden Tag
+        mit einem größeren Ausschnitt. Falsch gelesenes korrigierst du im Dropdown.
       </p>
 
       <section className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-line">
@@ -180,7 +180,7 @@ export function ImportPage() {
                 <img
                   src={day.thumb}
                   alt={day.label}
-                  className="size-11 shrink-0 rounded-lg bg-canvas object-contain ring-1 ring-line"
+                  className="h-16 w-[4.5rem] shrink-0 rounded-lg bg-canvas object-contain ring-1 ring-line"
                 />
                 <div className="min-w-0 flex-1">
                   <p className="font-bold leading-snug">{listDayLabel(day.date)}</p>

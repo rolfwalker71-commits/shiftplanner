@@ -17,6 +17,7 @@ const schema = z.object({
   ALLOWED_EMAILS: z.string().optional().default(""),
   OPENAI_API_KEY: z.string().optional().default(""),
   OPENAI_IMAGE_MODEL: z.string().default("gpt-image-1"),
+  OPENAI_VISION_MODEL: z.string().default("gpt-4o"),
   TZ: z.string().default("Europe/Zurich"),
   NOTIFY_HOUR: z.coerce.number().int().min(0).max(23).default(18),
   VAPID_PUBLIC_KEY: z.string().optional().default(""),
