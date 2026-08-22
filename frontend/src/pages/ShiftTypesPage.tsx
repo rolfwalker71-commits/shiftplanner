@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { Sparkles, Pencil, Plus, Trash2, X } from "lucide-react";
 import { api } from "../api";
 import type { ShiftType } from "../types";
@@ -118,7 +119,11 @@ export function ShiftTypesPage() {
       <div className="mb-4 flex items-center justify-between gap-3">
         <div>
           <h1 className="text-[1.25rem] font-semibold">Schichtarten</h1>
-          <p className="text-[0.875rem] text-muted">Codes, Zeiten und Pause selbst festlegen. Das Clay-3D-Bild kommt danach.</p>
+          <p className="text-[0.875rem] text-muted">
+            Codes, Zeiten und Pause selbst festlegen. Das Clay-3D-Bild kommt danach.
+            {" "}
+            <Link to="/app/import" className="text-navy underline">Dienstplan einlesen</Link>
+          </p>
         </div>
         <button
           type="button"

@@ -1,11 +1,12 @@
 import { Link, useOutletContext } from "react-router-dom";
-import { ClipboardList, HelpCircle, LogOut, Settings } from "lucide-react";
+import { ClipboardList, HelpCircle, LogOut, Settings, Upload } from "lucide-react";
 import type { Status } from "../types";
 
 export function MorePage() {
   const { onLogout } = useOutletContext<{ status: Status; onLogout: () => void }>();
   const items = [
     { to: "/app/schichten", label: "Schichtarten", text: "Codes, Zeiten und Bilder", icon: ClipboardList },
+    { to: "/app/import", label: "Dienstplan einlesen", text: "Monats-PDF prüfen und importieren", icon: Upload },
     { to: "/app/hilfe", label: "Hilfe", text: "Kurztour und Tipps", icon: HelpCircle },
     { to: "/app/einstellungen", label: "Einstellungen", text: "Google, Kalender, Erinnerungen", icon: Settings },
   ];

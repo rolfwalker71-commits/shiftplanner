@@ -31,6 +31,10 @@ const cards = [
     title: "Nachtdienst",
     text: "Endet die Zeit vor dem Start (z. B. 22:00–06:00), legt der Sync das Event über Mitternacht.",
   },
+  {
+    title: "Dienstplan einlesen",
+    text: "Unter Mehr die PDF hochladen und den Monat wählen. Jeder Tag erscheint mit dem erkannten Zeichen. Punkte und X sind frei, die Palme ist Ferien. Falsch gelesenes korrigierst du im Dropdown, dann „so importieren“.",
+  },
 ];
 
 export function HelpPage() {

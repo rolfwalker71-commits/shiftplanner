@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { api } from "../api";
 import type { Status } from "../types";
 import { disablePush, enablePush, pushSupported } from "../lib/push";
@@ -101,6 +102,15 @@ export function SettingsPage({
           </p>
         ) : null}
         {msg ? <p className="mt-2 text-[0.8125rem] leading-snug text-muted">{msg}</p> : null}
+      </section>
+      <section className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-line">
+        <h2 className="font-medium">Dienstplan einlesen</h2>
+        <p className="mt-1 text-[0.875rem] leading-snug text-muted">
+          Monats-PDF hochladen, jeden erkannten Tag prüfen und dann übernehmen.
+        </p>
+        <Link to="/app/import" className="mt-3 inline-flex h-11 items-center rounded-full bg-navy px-4 text-white">
+          Zum Import
+        </Link>
       </section>
       <section className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-line">
         <h2 className="font-medium">Google-Konto</h2>

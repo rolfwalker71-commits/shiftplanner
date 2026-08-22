@@ -1,6 +1,7 @@
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import cookie from "@fastify/cookie";
+import multipart from "@fastify/multipart";
 import staticFiles from "@fastify/static";
 import { existsSync } from "node:fs";
 import { mkdir } from "node:fs/promises";
@@ -10,6 +11,7 @@ import { env } from "./env.js";
 import { authRoutes } from "./routes/auth.js";
 import { shiftTypeRoutes } from "./routes/shiftTypes.js";
 import { shiftRoutes } from "./routes/shifts.js";
+import { importPlanRoutes } from "./routes/importPlan.js";
 import { pushRoutes } from "./routes/push.js";
 import { startReminderScheduler } from "./lib/reminders.js";
 import { configureWebPush } from "./lib/vapid.js";
@@ -29,6 +31,7 @@ await app.register(cors, {
   credentials: true,
 });
 await app.register(cookie);
+await app.register(multipart, { limits: { fileSize: 20 * 1024 * 1024, files: 1 } });
 
 await app.register(staticFiles, {
   root: uploadsRoot,
@@ -39,6 +42,7 @@ await app.register(staticFiles, {
 await app.register(authRoutes);
 await app.register(shiftTypeRoutes);
 await app.register(shiftRoutes);
+await app.register(importPlanRoutes);
 await app.register(pushRoutes);
 
 app.get("/api/health", async () => ({ ok: true }));

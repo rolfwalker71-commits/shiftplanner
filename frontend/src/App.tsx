@@ -12,6 +12,7 @@ import { DayViewPage } from "./pages/DayViewPage";
 import { PlanPage } from "./pages/PlanPage";
 import { MonthListPage } from "./pages/MonthListPage";
 import { MorePage } from "./pages/MorePage";
+import { ImportPage } from "./pages/ImportPage";
 import { useMdUp } from "./hooks/useMdUp";
 
 function HomeEntry() {
@@ -54,6 +55,7 @@ export default function App() {
         <Route path="schichten" element={<ShiftTypesPage />} />
         <Route path="hilfe" element={<HelpPage />} />
         <Route path="einstellungen" element={<SettingsPage status={status} onChange={() => api.status().then(setStatus)} />} />
+        <Route path="import" element={<ImportPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

@@ -1,5 +1,24 @@
 import type { Shift, ShiftType, Status } from "./types";
 
+export type ImportPreviewDay = {
+  day: number;
+  date: string;
+  code: string | null;
+  label: string;
+  confidence: "high" | "low";
+  thumb: string;
+  shiftTypeId: string | null;
+  matched: boolean;
+};
+
+export type ImportPreview = {
+  person: string;
+  monthHint: string | null;
+  month: string;
+  days: ImportPreviewDay[];
+  missing: string[];
+};
+
 async function req<T>(path: string, init?: RequestInit): Promise<T> {
   const headers = new Headers(init?.headers);
   if (init?.body && !headers.has("Content-Type")) {
@@ -69,4 +88,32 @@ export const api = {
       { method: "DELETE" },
     ),
   pushTest: () => req<{ ok: boolean }>("/api/push/test", { method: "POST" }),
+  previewImport: async (file: File, month: string, person: string) => {
+    const body = new FormData();
+    body.append("file", file);
+    body.append("month", month);
+    body.append("person", person);
+    const res = await fetch("/api/import/preview", { method: "POST", credentials: "include", body });
+    if (!res.ok) {
+      let message = res.statusText;
+      try {
+        const json = (await res.json()) as { error?: string };
+        if (json.error) message = json.error;
+      } catch {
+        /* ignore */
+      }
+      throw new Error(message);
+    }
+    return res.json() as Promise<ImportPreview>;
+  },
+  ensureImportTypes: (codes: string[]) =>
+    req<{ created: ShiftType[]; types: ShiftType[] }>("/api/import/ensure-types", {
+      method: "POST",
+      body: JSON.stringify({ codes }),
+    }),
+  commitImport: (days: { date: string; shiftTypeId: string }[]) =>
+    req<{ ok: boolean; count: number }>("/api/import/commit", {
+      method: "POST",
+      body: JSON.stringify({ days }),
+    }),
 };
