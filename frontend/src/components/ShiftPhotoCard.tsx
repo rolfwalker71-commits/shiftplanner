@@ -1,5 +1,5 @@
 import type { ShiftType } from "../types";
-import { formatDate, weekdayLong, workLabel } from "../lib/dates";
+import { formatDate, weekdayLong } from "../lib/dates";
 
 export function ShiftPhotoCard({
   date,
@@ -28,16 +28,12 @@ export function ShiftPhotoCard({
         <p className="text-[0.9rem] font-extrabold leading-snug text-ink">{formatDate(date)}</p>
       </div>
       {type ? (
-        <div className="absolute inset-x-3 bottom-3 z-10 rounded-2xl bg-white/45 px-4 py-1.5">
-          <div className="flex items-end justify-between gap-3">
-            <p className="text-[1.75rem] font-extrabold leading-none text-ink">{type.code}</p>
-            <div className="min-w-0 text-right">
-              <p className="text-[1rem] font-extrabold leading-snug text-ink">{type.name}</p>
-              <p className="text-[0.8125rem] leading-snug text-ink">
-                {workLabel(type.startTime, type.endTime, type.allDay, type.breakMinutes)}
-              </p>
-            </div>
-          </div>
+        <div className="absolute inset-x-3 bottom-3 z-10 flex items-center justify-center rounded-2xl bg-white/45 px-3 py-1">
+          <p className="text-center text-[1.05rem] font-extrabold leading-none text-ink">
+            {type.name && type.name.toLowerCase() !== type.code.toLowerCase()
+              ? `${type.code} · ${type.name}`
+              : type.code}
+          </p>
         </div>
       ) : null}
     </div>
