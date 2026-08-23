@@ -259,7 +259,7 @@ function DayCell({
       ) : null}
 
       <div
-        className="absolute left-1 top-1 z-10 max-w-[calc(100%-2.5rem)] rounded-md bg-white/75 px-1 py-0.5 text-[0.7rem] font-bold leading-snug break-words text-ink"
+        className="absolute left-1 top-1 z-10 max-w-[calc(100%-2.5rem)] rounded-md bg-white/45 px-1 py-0.5 text-[0.7rem] font-extrabold leading-snug break-words text-ink"
         title={formatDate(date)}
       >
         {formatDate(date)}

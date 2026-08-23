@@ -58,7 +58,7 @@ export function PlanPage() {
 
   return (
     <div className="flex flex-col gap-3 pb-28">
-      <h1 className="text-[1.25rem] font-bold leading-snug">Planen</h1>
+      <h1 className="text-[1.25rem] font-bold leading-snug">Einteilen</h1>
       <div className="flex items-center gap-1">
         <button
           type="button"

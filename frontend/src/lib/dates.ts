@@ -68,6 +68,18 @@ export function weekDays(anchor: Date) {
   return eachDayOfInterval({ start, end: addDays(start, 6) });
 }
 
+export function weekTitle(anchor: Date) {
+  const days = weekDays(anchor);
+  const start = format(days[0], "d.", { locale: de });
+  const end = format(days[6], "d. LLLL yyyy", { locale: de });
+  return `${start}–${end}`;
+}
+
+export function weekWindow(center: Date, back: number, forward: number) {
+  const start = startOfWeek(addDays(center, -back * 7), { weekStartsOn: 1 });
+  return Array.from({ length: back + forward + 1 }, (_, i) => addDays(start, i * 7));
+}
+
 export function monthLabel(anchor: Date) {
   return formatDateRange(startOfMonth(anchor), endOfMonth(anchor));
 }

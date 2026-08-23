@@ -1,13 +1,13 @@
 import { NavLink, Outlet } from "react-router-dom";
 import { useEffect } from "react";
 import {
-  Calendar,
   CalendarDays,
+  CalendarRange,
   ClipboardList,
   HelpCircle,
-  MoreHorizontal,
   Settings,
   Upload,
+  UserRound,
 } from "lucide-react";
 import type { Status } from "../types";
 import { syncPushIfGranted } from "../lib/push";
@@ -21,10 +21,10 @@ const desktopLinks = [
 ];
 
 const mobileLinks = [
-  { to: "/app/heute", label: "Heute", icon: Calendar },
-  { to: "/app/planen", label: "Planen", icon: ClipboardList },
+  { to: "/app/woche", label: "Woche", icon: CalendarRange },
+  { to: "/app/planen", label: "Einteilen", icon: ClipboardList },
   { to: "/app/monat", label: "Monat", icon: CalendarDays },
-  { to: "/app/mehr", label: "Mehr", icon: MoreHorizontal },
+  { to: "/app/mehr", label: "Konto", icon: UserRound },
 ];
 
 export function Layout({
@@ -87,7 +87,7 @@ export function Layout({
               key={l.to}
               to={l.to}
               className={({ isActive }) =>
-                `flex min-h-11 flex-1 flex-col items-center justify-center gap-0.5 rounded-xl text-[0.7rem] leading-snug ${
+                `flex min-h-11 flex-1 flex-col items-center justify-center gap-0.5 rounded-xl px-0.5 text-center text-[0.7rem] leading-snug ${
                   isActive ? "bg-canvas font-medium" : "text-muted"
                 }`
               }

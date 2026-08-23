@@ -13,7 +13,7 @@ export function MorePage() {
 
   return (
     <div className="flex flex-col gap-2">
-      <h1 className="mb-1 text-[1.25rem] font-bold leading-snug">Mehr</h1>
+      <h1 className="mb-1 text-[1.25rem] font-bold leading-snug">Konto</h1>
       {items.map((item) => (
         <Link
           key={item.to}

@@ -35,7 +35,7 @@ export function MonthListPage() {
           <Calendar className="size-4" /> Tag
         </Link>
         <Link
-          to="/app/planen"
+          to="/app/woche"
           className="flex h-full min-h-0 flex-1 items-center justify-center gap-1 rounded-full text-[0.8125rem] leading-none text-muted"
         >
           <CalendarRange className="size-4" /> Woche

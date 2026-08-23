@@ -5,7 +5,7 @@ const cards = [
   },
   {
     title: "Auf den Kalender ziehen",
-    text: "Am Computer: Schichtart auf einen Tag ziehen. Handy: unter Planen die Art antippen, dann den Tag. Löschen mit ×.",
+    text: "Am Computer: Schichtart auf einen Tag ziehen. Handy: unter Einteilen die Art antippen, dann den Tag. Löschen mit ×.",
   },
   {
     title: "Google Kalender",
@@ -25,7 +25,7 @@ const cards = [
   },
   {
     title: "Handy und PWA",
-    text: "Unten: Heute (wischen), Planen (antippen, nicht ziehen), Monat (Liste). Schichtarten, Hilfe und Einstellungen liegen unter Mehr. Zum Home-Bildschirm hinzufügen.",
+    text: "Unten: Woche (Bilder wischen), Einteilen (Schicht antippen), Monat (Liste), Konto (Import, Schichtarten, Google). Zum Home-Bildschirm hinzufügen.",
   },
   {
     title: "Nachtdienst",
@@ -33,7 +33,7 @@ const cards = [
   },
   {
     title: "Dienstplan einlesen",
-    text: "Unter Mehr die PDF hochladen und den Monat wählen. Jeder Tag erscheint mit dem erkannten Zeichen. Punkte und X sind frei, die Palme ist Ferien. Falsch gelesenes korrigierst du im Dropdown, dann „so importieren“.",
+    text: "Unter Konto die PDF hochladen und den Monat wählen. Jeder Tag erscheint mit dem erkannten Zeichen. Punkte und X sind frei, die Palme ist Ferien. Falsch gelesenes korrigierst du im Dropdown. Ein erneuter Import ersetzt den ganzen Monat.",
   },
 ];
 

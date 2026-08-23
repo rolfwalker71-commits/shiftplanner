@@ -3,7 +3,7 @@ import { z } from "zod";
 import { prisma } from "../db.js";
 import { requireUser } from "../session.js";
 import { extractDienstplan, matchShiftType } from "../lib/dienstplan.js";
-import { placeShift } from "../lib/placeShift.js";
+import { clearShiftsInRange, placeShift } from "../lib/placeShift.js";
 
 const ALL_DAY = new Set(["frei", "ferien", "urlaub", "u"]);
 
@@ -103,6 +103,8 @@ export async function importPlanRoutes(app: FastifyInstance) {
       })
       .safeParse(req.body);
     if (!parsed.success) return reply.code(400).send({ error: "Keine Tage zum Import." });
+    const month = parsed.data.days[0].date.slice(0, 7);
+    await clearShiftsInRange(user, `${month}-01`, `${month}-31`);
     const imported = [];
     for (const day of parsed.data.days) {
       const row = await placeShift(user, day.shiftTypeId, day.date);

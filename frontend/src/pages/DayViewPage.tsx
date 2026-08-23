@@ -2,13 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { api } from "../api";
 import type { Shift } from "../types";
-import {
-  dayWindow,
-  formatDate,
-  iso,
-  weekdayLong,
-  workLabel,
-} from "../lib/dates";
+import { ShiftPhotoCard } from "../components/ShiftPhotoCard";
+import { dayWindow, formatDate, iso } from "../lib/dates";
 
 export function DayViewPage() {
   const [params] = useSearchParams();
@@ -66,9 +61,7 @@ export function DayViewPage() {
       >
         {days.map((d) => {
           const key = iso(d);
-          const placed = byDay.get(key) ?? [];
-          const primary = placed[0];
-          const type = primary?.shiftType;
+          const type = (byDay.get(key) ?? [])[0]?.shiftType;
           return (
             <article
               key={key}
@@ -76,33 +69,8 @@ export function DayViewPage() {
               data-day={key}
               className="w-[calc(100%-2rem)] shrink-0 snap-center px-4"
             >
-              <div className="relative overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-line">
-                <div className="shift-cover relative aspect-[3/4] min-h-[22rem] bg-canvas">
-                  {type?.imagePath ? (
-                    <img src={type.imagePath} alt="" loading="lazy" className="absolute inset-0 size-full object-cover" />
-                  ) : (
-                    <div className="grid size-full place-items-center px-6 text-center">
-                      <p className="text-[1.25rem] font-bold leading-snug text-muted">Keine Schicht</p>
-                    </div>
-                  )}
-                  <div className="absolute left-3 top-3 z-10 max-w-[70%] rounded-xl bg-white/80 px-3 py-2">
-                    <p className="text-[1rem] font-bold leading-snug text-ink">{weekdayLong(d)}</p>
-                    <p className="text-[0.95rem] font-bold leading-snug text-ink">{formatDate(d)}</p>
-                  </div>
-                  {type ? (
-                    <div className="absolute inset-x-3 bottom-3 z-10 rounded-2xl bg-white/80 px-4 py-3">
-                      <div className="flex items-end justify-between gap-3">
-                        <p className="text-[2rem] font-bold leading-none text-ink">{type.code}</p>
-                        <div className="min-w-0 text-right">
-                          <p className="text-[1.05rem] font-bold leading-snug text-ink">{type.name}</p>
-                          <p className="text-[0.875rem] leading-snug text-ink">
-                            {workLabel(type.startTime, type.endTime, type.allDay, type.breakMinutes)}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  ) : null}
-                </div>
+              <div className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-line">
+                <ShiftPhotoCard date={d} type={type} />
               </div>
             </article>
           );
@@ -114,7 +82,7 @@ export function DayViewPage() {
           <span className="size-2 rounded-full bg-navy" />
           <span className="size-1.5 rounded-full bg-line" />
         </div>
-        <p className="text-[0.75rem] leading-snug text-muted">← Wischen für andere Tage</p>
+        <p className="text-[0.75rem] leading-snug text-muted">← Tag wischen</p>
         <p className="sr-only">Aktueller Tag {formatDate(current)}</p>
       </div>
     </div>

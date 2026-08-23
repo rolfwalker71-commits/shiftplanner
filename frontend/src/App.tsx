@@ -9,6 +9,7 @@ import { ShiftTypesPage } from "./pages/ShiftTypesPage";
 import { SettingsPage } from "./pages/SettingsPage";
 import { HelpPage } from "./pages/HelpPage";
 import { DayViewPage } from "./pages/DayViewPage";
+import { WeekViewPage } from "./pages/WeekViewPage";
 import { PlanPage } from "./pages/PlanPage";
 import { MonthListPage } from "./pages/MonthListPage";
 import { MorePage } from "./pages/MorePage";
@@ -17,7 +18,7 @@ import { useMdUp } from "./hooks/useMdUp";
 
 function HomeEntry() {
   const desktop = useMdUp();
-  return desktop ? <CalendarPage /> : <Navigate to="/app/heute" replace />;
+  return desktop ? <CalendarPage /> : <Navigate to="/app/woche" replace />;
 }
 
 export default function App() {
@@ -49,6 +50,7 @@ export default function App() {
       >
         <Route index element={<HomeEntry />} />
         <Route path="heute" element={<DayViewPage />} />
+        <Route path="woche" element={<WeekViewPage />} />
         <Route path="planen" element={<PlanPage />} />
         <Route path="monat" element={<MonthListPage />} />
         <Route path="mehr" element={<MorePage />} />

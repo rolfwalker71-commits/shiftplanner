@@ -92,7 +92,7 @@ export function ImportPage() {
     setError(null);
     try {
       const res = await api.commitImport(days);
-      setDone(`${res.count} Tage übernommen. Vorhandene Einträge an diesen Tagen wurden ersetzt.`);
+      setDone(`${res.count} Tage übernommen. Alle bisherigen Schichten in diesem Monat wurden ersetzt.`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Import fehlgeschlagen");
     } finally {
@@ -107,6 +107,7 @@ export function ImportPage() {
         PDF vom Monatsanfang hochladen. Die ganze Zeile wird per Bild-KI gelesen
         (S2, S4, F2, Punkt = frei, Palme = Ferien). Danach siehst du jeden Tag
         mit einem größeren Ausschnitt. Falsch gelesenes korrigierst du im Dropdown.
+        Ein erneuter Import ersetzt den ganzen Monat — nichts bleibt doppelt.
       </p>
 
       <section className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-line">
