@@ -10,7 +10,6 @@ import { cropIllustrationFile } from "./cropIllustration.js";
 const here = dirname(fileURLToPath(import.meta.url));
 export const uploadsDir = resolve(here, "../../uploads/illustrations");
 const assetsDir = resolve(here, "../../assets");
-const portraitRef = resolve(assetsDir, "character-base.png");
 const characterRef = resolve(assetsDir, "valentyna-clay-ref.png");
 
 const PLACEHOLDERS: { test: (input: PromptInput) => boolean; file: string }[] = [
@@ -54,17 +53,12 @@ export async function generateShiftIllustration(id: string, input: PromptInput) 
   if (openaiConfigured) {
     const client = new OpenAI({ apiKey: env.OPENAI_API_KEY });
     const model = env.OPENAI_IMAGE_MODEL;
-    const portrait = existsSync(portraitRef)
-      ? await fileFromPng(portraitRef, "valentyna-portrait.png")
-      : existsSync(characterRef)
-        ? await fileFromPng(characterRef, "valentyna-clay-ref.png")
-        : null;
-    const useReference = !model.includes("dall-e") && Boolean(portrait);
+    const useReference = !model.includes("dall-e") && existsSync(characterRef);
 
-    if (useReference && portrait) {
+    if (useReference) {
       const img = await client.images.edit({
         model,
-        image: portrait,
+        image: await fileFromPng(characterRef, "valentyna-clay-ref.png"),
         prompt,
         size: "1024x1024",
         quality: "high",
