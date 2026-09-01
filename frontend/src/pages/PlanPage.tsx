@@ -149,6 +149,22 @@ export function PlanPage() {
                   </Link>
                 )}
               </div>
+              {type ? (
+                <Link
+                  to={`/app/heute?date=${key}`}
+                  className="min-w-0 max-w-[42%] shrink-0 text-right"
+                  aria-label={type.name && type.name.toLowerCase() !== type.code.toLowerCase() ? `${type.code} ${type.name}` : type.code}
+                >
+                  <p className="break-words text-[1.35rem] font-extrabold leading-none text-navy">
+                    {type.code}
+                  </p>
+                  {type.name && type.name.toLowerCase() !== type.code.toLowerCase() ? (
+                    <p className="mt-0.5 break-words text-[0.75rem] font-semibold leading-snug text-ink">
+                      {type.name}
+                    </p>
+                  ) : null}
+                </Link>
+              ) : null}
               {primary ? (
                 <button
                   type="button"
