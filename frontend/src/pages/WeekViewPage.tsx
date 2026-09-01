@@ -61,7 +61,7 @@ export function WeekViewPage() {
               data-week={key}
               className="w-full shrink-0 snap-center px-4"
             >
-              <h1 className="mb-2 text-[1.15rem] font-extrabold leading-snug">{weekTitle(start)}</h1>
+              <h1 className="mb-2 break-words text-[1.15rem] font-extrabold leading-snug">{weekTitle(start)}</h1>
               <div className="flex flex-col gap-2">
                 {days.map((d) => {
                   const dayKey = iso(d);

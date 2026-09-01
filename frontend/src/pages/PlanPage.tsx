@@ -1,29 +1,28 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { addDays } from "date-fns";
 import { Plus } from "lucide-react";
 import { api } from "../api";
 import type { Shift, ShiftType } from "../types";
 import { useChrome } from "../hooks/useChrome";
-import { listTileClass } from "../lib/platform";
-import {
-  iso,
-  weekDays,
-  weekRangeCompact,
-  weekWindow,
-  weekdayShort,
-  workLabelCompact,
-} from "../lib/dates";
+import { ShiftDayRow } from "../components/ShiftDayRow";
+import { asDate, iso, weekDays, weekTitle, weekWindow } from "../lib/dates";
 
 export function PlanPage() {
   const chrome = useChrome();
+  const [params] = useSearchParams();
+  const requested =
+    params.get("date") && /^\d{4}-\d{2}-\d{2}$/.test(params.get("date")!)
+      ? params.get("date")!
+      : iso(new Date());
   const weeks = useMemo(() => weekWindow(new Date(), 16, 24), []);
   const from = iso(weeks[0]);
   const to = iso(addDays(weeks[weeks.length - 1], 6));
   const [types, setTypes] = useState<ShiftType[]>([]);
   const [shifts, setShifts] = useState<Shift[]>([]);
-  const [current, setCurrent] = useState(() => iso(weekDays(new Date())[0]));
+  const [current, setCurrent] = useState(() => iso(weekDays(asDate(requested))[0]));
   const [pickedType, setPickedType] = useState<string | null>(null);
-  const [pickedDay, setPickedDay] = useState(() => iso(new Date()));
+  const [pickedDay, setPickedDay] = useState(requested);
   const [msg, setMsg] = useState<string | null>(null);
   const scroller = useRef<HTMLDivElement>(null);
 
@@ -44,11 +43,16 @@ export function PlanPage() {
   }, [shifts]);
 
   useEffect(() => {
+    setPickedDay(requested);
+    setCurrent(iso(weekDays(asDate(requested))[0]));
+  }, [requested]);
+
+  useEffect(() => {
     document.getElementById(`plan-week-${current}`)?.scrollIntoView({
       inline: "center",
       block: "nearest",
     });
-  }, [weeks.length]);
+  }, [current, weeks.length]);
 
   useEffect(() => {
     const root = scroller.current;
@@ -131,11 +135,11 @@ export function PlanPage() {
       }
     >
       <h1
-        className={`shrink-0 text-center font-extrabold leading-snug tracking-tight ${
-          mobile ? "px-4 pb-1 pt-1 text-[1.2rem]" : "text-[1.15rem]"
+        className={`shrink-0 break-words text-center font-extrabold leading-snug tracking-tight ${
+          mobile ? "px-4 pb-1 pt-1 text-[1.05rem]" : "text-[1.15rem]"
         }`}
       >
-        {weekRangeCompact(current)}
+        {weekTitle(current)}
       </h1>
       <p className="sr-only" aria-live="polite">
         {msg}
@@ -164,60 +168,17 @@ export function PlanPage() {
                   const dayKey = iso(d);
                   const primary = (byDay.get(dayKey) ?? [])[0];
                   const type = primary?.shiftType;
-                  const empty = !primary;
-                  const selected = dayKey === pickedDay;
                   return (
-                    <div
+                    <ShiftDayRow
                       key={dayKey}
-                      className={`flex min-h-0 flex-1 items-stretch overflow-hidden ${listTileClass(chrome, selected)}`}
-                    >
-                      {empty ? (
-                        <button
-                          type="button"
-                          className="grid aspect-square h-full min-h-0 shrink-0 place-items-center self-stretch bg-canvas"
-                          onClick={() => assign(dayKey)}
-                          aria-label={`${weekdayShort(d)} Schicht wählen`}
-                        >
-                          <Plus className="size-5 text-muted" />
-                        </button>
-                      ) : (
-                        <button
-                          type="button"
-                          className="shift-cover aspect-square h-full min-h-0 shrink-0 self-stretch bg-canvas"
-                          onClick={() => assign(dayKey)}
-                        >
-                          {type?.imagePath ? (
-                            <img src={type.imagePath} alt="" className="size-full object-cover" />
-                          ) : (
-                            <span className="grid size-full place-items-center text-[0.85rem] font-bold">
-                              {type?.code}
-                            </span>
-                          )}
-                        </button>
-                      )}
-                      <div className="flex min-w-0 flex-1 items-center gap-2 px-2.5">
-                        <button
-                          type="button"
-                          className="min-w-0 flex-1 text-left"
-                          onClick={() => assign(dayKey)}
-                        >
-                          <p className="font-bold leading-none">
-                            {weekdayShort(d)} {d.getDate()}.
-                          </p>
-                          <p className="mt-0.5 text-[0.8rem] leading-none text-muted">
-                            {empty
-                              ? "wählen"
-                              : type
-                                ? workLabelCompact(type.startTime, type.endTime, type.allDay)
-                                : ""}
-                          </p>
-                        </button>
-                        {type ? (
-                          <p className="shrink-0 text-[1.25rem] font-extrabold leading-none text-primary">
-                            {type.code}
-                          </p>
-                        ) : null}
-                        {primary ? (
+                      date={d}
+                      type={type}
+                      selected={dayKey === pickedDay}
+                      grow
+                      emptyCover={<Plus className="size-5" />}
+                      onOpen={() => assign(dayKey)}
+                      trailing={
+                        primary ? (
                           <button
                             type="button"
                             className="grid size-12 shrink-0 place-items-center text-[1.25rem] font-bold"
@@ -230,9 +191,9 @@ export function PlanPage() {
                           <span className="grid size-12 shrink-0 place-items-center text-[1.15rem] text-muted">
                             ›
                           </span>
-                        )}
-                      </div>
-                    </div>
+                        )
+                      }
+                    />
                   );
                 })}
               </section>

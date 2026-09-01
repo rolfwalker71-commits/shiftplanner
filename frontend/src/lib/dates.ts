@@ -68,17 +68,9 @@ export function weekDays(anchor: Date) {
   return eachDayOfInterval({ start, end: addDays(start, 6) });
 }
 
-export function weekTitle(anchor: Date) {
-  const days = weekDays(anchor);
-  const start = format(days[0], "d.", { locale: de });
-  const end = format(days[6], "d. LLLL yyyy", { locale: de });
-  return `${start}–${end}`;
-}
-
-/** Display: 31.8. – 6.9. */
-export function weekRangeCompact(anchor: Date | string) {
+export function weekTitle(anchor: Date | string) {
   const days = weekDays(asDate(anchor));
-  return `${format(days[0], "d.M.")} – ${format(days[6], "d.M.")}`;
+  return `${formatDate(days[0])} bis ${formatDate(days[6])}`;
 }
 
 export function weekWindow(center: Date, back: number, forward: number) {
@@ -123,6 +115,20 @@ export function workLabel(start: string | null, end: string | null, allDay: bool
 
 export function workLabelCompact(start: string | null, end: string | null, allDay: boolean) {
   return formatTimeRange(start, end, allDay);
+}
+
+export function workFacts(
+  start: string | null,
+  end: string | null,
+  allDay: boolean,
+  breakMinutes: number,
+) {
+  if (allDay || !start || !end) return "ganztags";
+  const parts = [formatTimeRange(start, end, false)];
+  if (breakMinutes > 0) parts.push(`P ${breakMinutes}`);
+  const net = netHours(start, end, breakMinutes, false);
+  if (net) parts.push(net.replace(" Std", ""));
+  return parts.join(" · ");
 }
 
 export function dayWindow(center: Date, back: number, forward: number) {

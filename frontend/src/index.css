@@ -13,8 +13,8 @@
   --app-secondary: #d3e3f7;
   --app-peach: #e8a87c;
   --app-font: "Roboto Flex", Roboto, system-ui, sans-serif;
-  --header-h: 4rem;
-  --dock-h: 4rem;
+  --header-h: 3.75rem;
+  --dock-h: 4.75rem;
 }
 
 html[data-chrome="android"] {
@@ -28,8 +28,8 @@ html[data-chrome="android"] {
   --app-on-primary: #ffffff;
   --app-secondary: #e8def8;
   --app-font: "Roboto Flex", Roboto, system-ui, sans-serif;
-  --header-h: 4rem;
-  --dock-h: 4rem;
+  --header-h: 3.75rem;
+  --dock-h: 4.75rem;
   color-scheme: light;
 }
 

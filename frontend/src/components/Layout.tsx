@@ -1,6 +1,7 @@
 import { NavLink, Outlet } from "react-router-dom";
 import { useEffect } from "react";
 import {
+  Calendar,
   CalendarDays,
   CalendarRange,
   ClipboardList,
@@ -23,9 +24,10 @@ const desktopLinks = [
 ];
 
 const mobileLinks = [
+  { to: "/app/heute", label: "Tag", icon: Calendar },
   { to: "/app/woche", label: "Woche", icon: CalendarRange },
-  { to: "/app/planen", label: "Einteilen", icon: ClipboardList },
   { to: "/app/monat", label: "Monat", icon: CalendarDays },
+  { to: "/app/planen", label: "Einteilen", icon: ClipboardList },
   { to: "/app/mehr", label: "Konto", icon: UserRound },
 ];
 
@@ -105,14 +107,14 @@ export function Layout({
               {({ isActive }) => (
                 <>
                   <span
-                    className={`grid size-12 place-items-center rounded-full ${
+                    className={`grid size-10 place-items-center rounded-full ${
                       isActive ? "bg-secondary text-primary" : "text-muted"
                     }`}
                   >
                     <l.icon className="size-5" />
                   </span>
                   <span
-                    className={`text-center text-[0.7rem] leading-none ${
+                    className={`max-w-full break-words text-center text-[0.7rem] leading-snug ${
                       isActive ? "font-semibold text-primary" : "text-muted"
                     }`}
                   >

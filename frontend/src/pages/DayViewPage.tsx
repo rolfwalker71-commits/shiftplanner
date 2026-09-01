@@ -1,11 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
+import { addDays } from "date-fns";
 import { api } from "../api";
 import type { Shift } from "../types";
 import { ShiftPhotoCard } from "../components/ShiftPhotoCard";
-import { dayWindow, formatDate, iso } from "../lib/dates";
+import { useChrome } from "../hooks/useChrome";
+import { listTileClass } from "../lib/platform";
+import { asDate, dayWindow, formatTime, iso, workFacts } from "../lib/dates";
 
 export function DayViewPage() {
+  const chrome = useChrome();
   const [params] = useSearchParams();
   const requested =
     params.get("date") && /^\d{4}-\d{2}-\d{2}$/.test(params.get("date")!)
@@ -18,9 +22,14 @@ export function DayViewPage() {
   const [shifts, setShifts] = useState<Shift[]>([]);
   const [current, setCurrent] = useState(requested);
   const scroller = useRef<HTMLDivElement>(null);
+  const mobile = chrome !== "desktop";
+
+  async function reload() {
+    setShifts(await api.shifts(from, to));
+  }
 
   useEffect(() => {
-    api.shifts(from, to).then(setShifts).catch(() => setShifts([]));
+    reload().catch(() => setShifts([]));
   }, [from, to]);
 
   const byDay = useMemo(() => {
@@ -34,6 +43,7 @@ export function DayViewPage() {
   useEffect(() => {
     const el = document.getElementById(`day-${requested}`);
     el?.scrollIntoView({ inline: "center", block: "nearest" });
+    setCurrent(requested);
   }, [requested, days.length]);
 
   useEffect(() => {
@@ -53,37 +63,86 @@ export function DayViewPage() {
     return () => obs.disconnect();
   }, [days.length]);
 
+  const placed = byDay.get(current) ?? [];
+  const shift = placed[0];
+  const type = shift?.shiftType;
+  const tomorrow = byDay.get(iso(addDays(asDate(current), 1)))?.[0]?.shiftType;
+  const tomorrowLine = tomorrow
+    ? tomorrow.allDay || !tomorrow.startTime
+      ? `Morgen · ${tomorrow.code}`
+      : `Morgen · ${tomorrow.code} · ${formatTime(tomorrow.startTime)}`
+    : "Morgen · frei";
+
+  async function remove() {
+    if (!shift) return;
+    await api.deleteShift(shift.id);
+    await reload();
+  }
+
+  const btn =
+    chrome === "desktop"
+      ? "flex h-10 min-h-10 flex-1 items-center justify-center rounded-md text-[0.8125rem] font-semibold"
+      : "flex h-10 min-h-10 flex-1 items-center justify-center rounded-full text-[0.8125rem] font-semibold";
+
   return (
-    <div className="flex flex-col gap-3">
+    <div
+      className={`flex flex-col ${mobile ? "-mx-4 overflow-hidden" : "gap-3"}`}
+      style={
+        mobile
+          ? {
+              height:
+                "calc(100dvh - var(--header-h) - var(--dock-h) - env(safe-area-inset-bottom, 0px) - 1rem)",
+            }
+          : undefined
+      }
+    >
       <div
         ref={scroller}
-        className="hide-scrollbar -mx-4 flex snap-x snap-mandatory overflow-x-auto pb-1"
+        className={`hide-scrollbar min-h-0 flex-1 snap-x snap-mandatory overflow-x-auto overflow-y-hidden ${
+          mobile ? "" : "-mx-1"
+        }`}
       >
-        {days.map((d) => {
-          const key = iso(d);
-          const type = (byDay.get(key) ?? [])[0]?.shiftType;
-          return (
-            <article
-              key={key}
-              id={`day-${key}`}
-              data-day={key}
-              className="w-[calc(100%-2rem)] shrink-0 snap-center px-4"
-            >
-              <div className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-line">
-                <ShiftPhotoCard date={d} type={type} />
-              </div>
-            </article>
-          );
-        })}
-      </div>
-      <div className="flex flex-col items-center gap-2">
-        <div className="flex items-center gap-1.5" aria-hidden>
-          <span className="size-1.5 rounded-full bg-line" />
-          <span className="size-2 rounded-full bg-navy" />
-          <span className="size-1.5 rounded-full bg-line" />
+        <div className="flex h-full">
+          {days.map((d) => {
+            const key = iso(d);
+            const dayType = (byDay.get(key) ?? [])[0]?.shiftType;
+            return (
+              <article
+                key={key}
+                id={`day-${key}`}
+                data-day={key}
+                className={`h-full shrink-0 snap-center ${mobile ? "w-full px-4" : "w-full px-1"}`}
+              >
+                <div className={`h-full overflow-hidden ${listTileClass(chrome)}`}>
+                  <ShiftPhotoCard date={d} type={dayType} fill />
+                </div>
+              </article>
+            );
+          })}
         </div>
-        <p className="text-[0.75rem] leading-snug text-muted">← Tag wischen</p>
-        <p className="sr-only">Aktueller Tag {formatDate(current)}</p>
+      </div>
+
+      <div className={`shrink-0 ${mobile ? "px-4 py-1.5" : ""}`}>
+        <div className={`px-3 py-2 ${listTileClass(chrome)}`}>
+          <p className="break-words text-[0.95rem] font-extrabold leading-snug">
+            {type ? workFacts(type.startTime, type.endTime, type.allDay, type.breakMinutes) : "Keine Schicht"}
+          </p>
+          <p className="mt-0.5 break-words text-[0.8rem] leading-snug text-muted">{tomorrowLine}</p>
+          <div className="mt-2 flex gap-2">
+            <Link
+              to={`/app/planen?date=${current}`}
+              className={`${btn} bg-primary text-[var(--app-on-primary)]`}
+            >
+              Ändern
+            </Link>
+            {shift ? (
+              <button type="button" className={`${btn} bg-secondary text-primary`} onClick={() => remove()}>
+                Löschen
+              </button>
+            ) : null}
+          </div>
+        </div>
+        <p className="sr-only">Aktueller Tag {current}</p>
       </div>
     </div>
   );

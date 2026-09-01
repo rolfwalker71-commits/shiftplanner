@@ -25,7 +25,7 @@ const cards = [
   },
   {
     title: "Handy und PWA",
-    text: "Unten: Woche (Bilder wischen), Einteilen (Schicht antippen), Monat (Liste), Konto (Import, Schichtarten, Google). Zum Home-Bildschirm hinzufügen.",
+    text: "Unten: Tag, Woche, Monat, Einteilen, Konto. Woche wischen, unter Einteilen Schicht antippen, Konto für Import und Google. Zum Home-Bildschirm hinzufügen.",
   },
   {
     title: "Nachtdienst",
