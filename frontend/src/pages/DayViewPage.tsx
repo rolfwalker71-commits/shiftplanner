@@ -66,12 +66,13 @@ export function DayViewPage() {
   const placed = byDay.get(current) ?? [];
   const shift = placed[0];
   const type = shift?.shiftType;
-  const tomorrow = byDay.get(iso(addDays(asDate(current), 1)))?.[0]?.shiftType;
-  const tomorrowLine = tomorrow
+  const tomorrowDate = iso(addDays(asDate(current), 1));
+  const tomorrow = byDay.get(tomorrowDate)?.[0]?.shiftType;
+  const tomorrowDetail = tomorrow
     ? tomorrow.allDay || !tomorrow.startTime
-      ? `Morgen · ${tomorrow.code}`
-      : `Morgen · ${tomorrow.code} · ${formatTime(tomorrow.startTime)}`
-    : "Morgen · frei";
+      ? tomorrow.code
+      : `${tomorrow.code} · ${formatTime(tomorrow.startTime)}`
+    : "frei";
 
   async function remove() {
     if (!shift) return;
@@ -124,10 +125,24 @@ export function DayViewPage() {
 
       <div className={`shrink-0 ${mobile ? "px-4 py-1.5" : ""}`}>
         <div className={`px-3 py-2 ${listTileClass(chrome)}`}>
-          <p className="break-words text-[0.95rem] font-extrabold leading-snug">
-            {type ? workFacts(type.startTime, type.endTime, type.allDay, type.breakMinutes) : "Keine Schicht"}
-          </p>
-          <p className="mt-0.5 break-words text-[0.8rem] leading-snug text-muted">{tomorrowLine}</p>
+          <div className="flex items-center gap-2">
+            <p className="min-w-0 flex-1 break-words text-[0.95rem] font-extrabold leading-snug">
+              {type ? workFacts(type.startTime, type.endTime, type.allDay, type.breakMinutes) : "Keine Schicht"}
+            </p>
+            <Link
+              to={`/app/heute?date=${tomorrowDate}`}
+              className={`max-w-[42%] shrink-0 text-right ${
+                chrome === "desktop"
+                  ? "rounded-md bg-primary/10 px-2.5 py-1"
+                  : "rounded-2xl bg-secondary px-2.5 py-1"
+              }`}
+            >
+              <span className="block text-[0.7rem] font-semibold leading-none text-primary">Morgen</span>
+              <span className="mt-0.5 block break-words text-[0.8rem] font-extrabold leading-snug text-primary">
+                {tomorrowDetail}
+              </span>
+            </Link>
+          </div>
           <div className="mt-2 flex gap-2">
             <Link
               to={`/app/planen?date=${current}`}
