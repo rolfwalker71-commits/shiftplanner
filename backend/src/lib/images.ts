@@ -10,6 +10,8 @@ import { cropIllustrationFile } from "./cropIllustration.js";
 const here = dirname(fileURLToPath(import.meta.url));
 export const uploadsDir = resolve(here, "../../uploads/illustrations");
 const assetsDir = resolve(here, "../../assets");
+const portraitRef = resolve(assetsDir, "character-base.png");
+const styleRef = resolve(assetsDir, "clay3d-Frei.png");
 const characterRef = resolve(assetsDir, "valentyna-clay-ref.png");
 
 const PLACEHOLDERS: { test: (input: PromptInput) => boolean; file: string }[] = [
@@ -53,12 +55,19 @@ export async function generateShiftIllustration(id: string, input: PromptInput) 
   if (openaiConfigured) {
     const client = new OpenAI({ apiKey: env.OPENAI_API_KEY });
     const model = env.OPENAI_IMAGE_MODEL;
-    const useReference = !model.includes("dall-e") && existsSync(characterRef);
+    const refs = [
+      existsSync(portraitRef) ? await fileFromPng(portraitRef, "valentyna-portrait.png") : null,
+      existsSync(styleRef) ? await fileFromPng(styleRef, "clay3d-style.png") : null,
+      !existsSync(portraitRef) && existsSync(characterRef)
+        ? await fileFromPng(characterRef, "valentyna-clay-ref.png")
+        : null,
+    ].filter((f): f is Awaited<ReturnType<typeof fileFromPng>> => Boolean(f));
+    const useReference = !model.includes("dall-e") && refs.length > 0;
 
     if (useReference) {
       const img = await client.images.edit({
         model,
-        image: await fileFromPng(characterRef, "valentyna-clay-ref.png"),
+        image: refs.length === 1 ? refs[0] : refs,
         prompt,
         size: "1024x1024",
         quality: "high",

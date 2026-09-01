@@ -8,25 +8,35 @@ export type PromptInput = {
   showCodeInImage?: boolean;
 };
 
-const IDENTITY = `CHARACTER BIBLE — the attached image is the approved clay-3D illustration of Valentyna. New images must look like THE SAME PERSON as in that picture, not a new design and not a photo-real remix.
+const IDENTITY = `CHARACTER — the first attached image is Valentyna’s portrait. Every new picture must be HER, translated into clay, not a new woman and not a photo.
 
-Keep unchanged from the attached image:
-- Face: the same round, friendly clay face with full cheeks, soft chin, wide toothy smile, peach blush, warm brown almond eyes, thin light-brown brows.
-- Hair: the same golden-brown / sandy-blonde shoulder-length clay hair, center-ish part, smooth matte clay, ends flicking OUTWARD.
-- Art style: the same polished claymorphism 3D (matte plasticine, soft studio light) as the attached image.
+Keep from the portrait:
+- the same wide joyful smile and bright teeth
+- dark brown eyes that smile with her
+- thin arched brows, full cheeks, peach blush
+- honey / light-brown shoulder-length hair, tucked behind the ears
+- the same friendly, open face
 
-You MAY change: background, lighting/time of day, what she holds, apron color, pose, and a slightly different expression for the shift mood.
-You may NOT change: her identity, face shape, haircut, or art style into Pixar-caricature, photorealism, or a different woman.`;
+Sculpt that likeness in clay. Do not age her, slim her, change her haircut, or make her photoreal.`;
 
-const STYLE = `Match the attached clay-3D icon exactly. Square composition, character centered, half-body. No watermark, no UI chrome.`;
+const STYLE = `ART STYLE — match the second attached image (the cozy clay-3D Frei illustration).
+
+Premium 3D claymorphism, like a high-end app icon:
+- smooth matte plasticine / clay, chunky rounded forms, no sharp edges
+- thick sculpted hair, toy-like clothes with soft folds, gentle studio light
+- warm cozy palette, soft shadows, octane-quality lighting but clay materials
+- square composition, face large and readable, half-body or close portrait
+- no watermark, no UI chrome, no photoreal skin, no Pixar caricature, no anime
+
+The result should look as polished and tactile as that Frei picture.`;
 
 const BADGE = `On work scenes she wears a small rectangular name badge on the blouse or apron. Two centered lines only: first line "Kantonspital Uri", second line "Valentyna".`;
 
-const JOB = `She works in Gästebetreuung at Kantonspital Uri: restaurant/cafeteria service AND tray delivery to patient rooms (Zimmerservice). NOT a nurse or clinician. No scrubs, stethoscope, medical cross, hospital bed close-up, IV or clinical tools. Uniform: cream/white blouse, colored apron matching the mood. ${BADGE}`;
+const JOB = `She works in Gästebetreuung at Kantonspital Uri: restaurant/cafeteria service AND tray delivery to patient rooms (Zimmerservice). NOT a nurse or clinician. No scrubs, stethoscope, medical cross, hospital bed close-up, IV or clinical tools. Uniform: cream/white blouse, colored apron matching the mood. ${BADGE} Her face stays the hero of the frame even when she holds a tray.`;
 
 function timeOfDayHint(start?: string | null, allDay?: boolean) {
   if (allDay) {
-    return "off-duty, not at the hospital: different clothes, leisure lighting, relaxed expression";
+    return "off-duty, not at the hospital: cozy home clothes like a chunky knit, leisure lighting, relaxed expression — same clay quality as the Frei reference";
   }
   const h = Number((start ?? "08:00").slice(0, 2));
   if (h >= 5 && h < 11) {
@@ -64,13 +74,14 @@ export function buildIllustrationPrompt(input: PromptInput) {
     IDENTITY,
     STYLE,
     input.allDay
-      ? "Off-duty scene: no work uniform and no name badge. Same clay woman as the attached illustration."
+      ? "Off-duty scene: no work uniform and no name badge. Same Valentyna as in the portrait, in the Frei clay-3D look."
       : JOB,
     `Shift "${input.code}" (${input.name}), ${hours}.`,
     `Mood and setting: ${setting}.`,
     extra,
+    "Always keep her face clearly visible in the foreground.",
     code,
   ]
     .filter(Boolean)
-    .join(" ");
+    .join("\n\n");
 }
