@@ -75,6 +75,12 @@ export function weekTitle(anchor: Date) {
   return `${start}–${end}`;
 }
 
+/** Display: 31.8. – 6.9. */
+export function weekRangeCompact(anchor: Date | string) {
+  const days = weekDays(asDate(anchor));
+  return `${format(days[0], "d.M.")} – ${format(days[6], "d.M.")}`;
+}
+
 export function weekWindow(center: Date, back: number, forward: number) {
   const start = startOfWeek(addDays(center, -back * 7), { weekStartsOn: 1 });
   return Array.from({ length: back + forward + 1 }, (_, i) => addDays(start, i * 7));
@@ -113,6 +119,10 @@ export function workLabel(start: string | null, end: string | null, allDay: bool
   if (allDay || !start || !end) return "ganztags";
   const pause = breakMinutes > 0 ? ` · Pause ${breakMinutes} Min` : "";
   return `${formatTimeRange(start, end, false)} Uhr${pause}`;
+}
+
+export function workLabelCompact(start: string | null, end: string | null, allDay: boolean) {
+  return formatTimeRange(start, end, allDay);
 }
 
 export function dayWindow(center: Date, back: number, forward: number) {

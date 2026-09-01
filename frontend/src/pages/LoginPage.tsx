@@ -20,7 +20,7 @@ export function LoginPage({
 
   return (
     <div className="grid min-h-dvh place-items-center px-4">
-      <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-sm ring-1 ring-line">
+      <div className="w-full max-w-md rounded-3xl bg-card p-8 lg:rounded-md lg:ring-1 lg:ring-border">
         <img src="/logo.png" alt="" className="mb-4 size-12" />
         <h1 className="text-[1.875rem] font-bold leading-snug tracking-tight">Arbeitsplan</h1>
         <p className="mt-2 text-[0.95rem] leading-snug text-muted">
@@ -36,7 +36,7 @@ export function LoginPage({
           {status.googleConfigured ? (
             <a
               href="/api/auth/google"
-              className="flex h-11 items-center justify-center rounded-full bg-navy text-white"
+              className="flex h-12 items-center justify-center rounded-full bg-primary text-[var(--app-on-primary)] lg:h-11 lg:rounded-md"
             >
               Mit Google anmelden
             </a>
@@ -48,7 +48,7 @@ export function LoginPage({
           {status.demoMode ? (
             <button
               type="button"
-              className="flex h-11 items-center justify-center rounded-full bg-white ring-1 ring-line"
+              className="flex h-12 items-center justify-center rounded-full bg-secondary text-primary lg:h-11 lg:rounded-md lg:bg-card lg:ring-1 lg:ring-border"
               onClick={async () => {
                 await api.demoLogin();
                 onLogin();

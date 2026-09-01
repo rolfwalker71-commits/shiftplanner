@@ -5,7 +5,7 @@ const cards = [
   },
   {
     title: "Auf den Kalender ziehen",
-    text: "Am Computer: Schichtart auf einen Tag ziehen. Handy: unter Einteilen die Art antippen, dann den Tag. Löschen mit ×.",
+    text: "Am Computer: Schichtart auf einen Tag ziehen. Handy: unter Einteilen die Art antippen, dann den Tag. Woche wischen. Löschen mit ×.",
   },
   {
     title: "Google Kalender",
@@ -46,7 +46,7 @@ export function HelpPage() {
       </p>
       <div className="grid gap-3 sm:grid-cols-2">
         {cards.map((c) => (
-          <article key={c.title} className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-line">
+          <article key={c.title} className="rounded-3xl bg-card p-4 lg:rounded-md lg:ring-1 lg:ring-border">
             <h2 className="text-[1rem] font-semibold leading-snug">{c.title}</h2>
             <p className="mt-2 text-[0.875rem] leading-snug text-muted">{c.text}</p>
           </article>

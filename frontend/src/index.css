@@ -1,24 +1,122 @@
 @import "tailwindcss";
 
+:root {
+  --app-font-scale: 1.125;
+  --app-bg: #f6f7fb;
+  --app-surface: #e8eaf0;
+  --app-card: #ffffff;
+  --app-ink: #1c2430;
+  --app-muted: #5b6573;
+  --app-line: #c9c5d0;
+  --app-primary: #1f3a5f;
+  --app-on-primary: #ffffff;
+  --app-secondary: #d3e3f7;
+  --app-peach: #e8a87c;
+  --app-font: "Roboto Flex", Roboto, system-ui, sans-serif;
+  --header-h: 4rem;
+  --dock-h: 4rem;
+}
+
+html[data-chrome="android"] {
+  --app-bg: #f4f0f7;
+  --app-surface: #e8e0ee;
+  --app-card: #fffbff;
+  --app-ink: #1c1b1f;
+  --app-muted: #5b5b66;
+  --app-line: #cac4d0;
+  --app-primary: #6750a4;
+  --app-on-primary: #ffffff;
+  --app-secondary: #e8def8;
+  --app-font: "Roboto Flex", Roboto, system-ui, sans-serif;
+  --header-h: 4rem;
+  --dock-h: 4rem;
+  color-scheme: light;
+}
+
+html[data-chrome="desktop"] {
+  --app-bg: #f3f3f3;
+  --app-surface: #f3f3f3;
+  --app-card: #ffffff;
+  --app-ink: #1a1a1a;
+  --app-muted: #5d5d5d;
+  --app-line: #e5e5e5;
+  --app-primary: #005fb8;
+  --app-on-primary: #ffffff;
+  --app-secondary: #e8f1fb;
+  --app-font: "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
+  --header-h: 3.25rem;
+  --dock-h: 0rem;
+  color-scheme: light;
+}
+
+html[data-chrome="ios"] {
+  --app-bg: #f2f2f7;
+  --app-surface: #ffffff;
+  --app-card: #ffffff;
+  --app-ink: #1d1d1f;
+  --app-muted: #6e6e73;
+  --app-line: #e5e5ea;
+  --app-primary: #1f3a5f;
+  --app-on-primary: #ffffff;
+  --app-secondary: #e8eef5;
+  --app-font: "Inter", system-ui, sans-serif;
+  --header-h: 4rem;
+  --dock-h: 5.5rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  html[data-chrome="android"] {
+    --app-bg: #141218;
+    --app-surface: #211f26;
+    --app-card: #2b2930;
+    --app-ink: #e6e1e5;
+    --app-muted: #cac4d0;
+    --app-line: #49454f;
+    --app-primary: #d0bcff;
+    --app-on-primary: #381e72;
+    --app-secondary: #4a4458;
+    color-scheme: dark;
+  }
+
+  html[data-chrome="desktop"] {
+    --app-bg: #202020;
+    --app-surface: #202020;
+    --app-card: #2c2c2c;
+    --app-ink: #ffffff;
+    --app-muted: #9d9d9d;
+    --app-line: #3d3d3d;
+    --app-primary: #60cdff;
+    --app-on-primary: #00344f;
+    --app-secondary: #1a3a52;
+    color-scheme: dark;
+  }
+}
+
 @theme {
-  --font-sans: "Inter", "Segoe UI", system-ui, sans-serif;
-  --color-canvas: #f6f7f9;
-  --color-ink: #1c2430;
-  --color-muted: #5b6573;
-  --color-line: #e6e8ec;
-  --color-navy: #1f3a5f;
-  --color-peach: #e8a87c;
+  --font-sans: var(--app-font);
+  --color-canvas: var(--app-bg);
+  --color-background: var(--app-bg);
+  --color-card: var(--app-card);
+  --color-ink: var(--app-ink);
+  --color-foreground: var(--app-ink);
+  --color-muted: var(--app-muted);
+  --color-line: var(--app-line);
+  --color-border: var(--app-line);
+  --color-navy: var(--app-primary);
+  --color-primary: var(--app-primary);
+  --color-secondary: var(--app-secondary);
+  --color-peach: var(--app-peach);
 }
 
 html {
-  font-size: 112.5%;
+  font-size: calc(100% * var(--app-font-scale));
 }
 
 body {
   margin: 0;
-  background: var(--color-canvas);
-  color: var(--color-ink);
-  font-family: var(--font-sans);
+  background: var(--app-bg);
+  color: var(--app-ink);
+  font-family: var(--app-font);
 }
 
 #root {
@@ -57,4 +155,13 @@ button.shift-code {
   object-fit: cover;
   transform: scale(1.06);
   transform-origin: center;
+}
+
+.chrome-header {
+  background: var(--app-surface);
+}
+
+html[data-chrome="desktop"] .chrome-header {
+  background: color-mix(in srgb, var(--app-card) 80%, transparent);
+  backdrop-filter: blur(1.25rem) saturate(1.4);
 }

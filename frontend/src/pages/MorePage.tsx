@@ -1,9 +1,12 @@
 import { Link, useOutletContext } from "react-router-dom";
 import { ClipboardList, HelpCircle, LogOut, Settings, Upload } from "lucide-react";
 import type { Status } from "../types";
+import { useChrome } from "../hooks/useChrome";
+import { listTileClass } from "../lib/platform";
 
 export function MorePage() {
   const { onLogout } = useOutletContext<{ status: Status; onLogout: () => void }>();
+  const chrome = useChrome();
   const items = [
     { to: "/app/schichten", label: "Schichtarten", text: "Codes, Zeiten und Bilder", icon: ClipboardList },
     { to: "/app/import", label: "Dienstplan einlesen", text: "Monats-PDF prüfen und importieren", icon: Upload },
@@ -18,7 +21,7 @@ export function MorePage() {
         <Link
           key={item.to}
           to={item.to}
-          className="flex items-center gap-3 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-line"
+          className={`flex items-center gap-3 p-4 ${listTileClass(chrome)}`}
         >
           <item.icon className="size-5 shrink-0 text-navy" />
           <span className="min-w-0 flex-1">
@@ -31,7 +34,7 @@ export function MorePage() {
       <button
         type="button"
         onClick={onLogout}
-        className="mt-2 flex min-h-11 items-center gap-3 rounded-2xl bg-white p-4 text-left shadow-sm ring-1 ring-line"
+        className={`mt-2 flex min-h-12 items-center gap-3 p-4 text-left ${listTileClass(chrome)}`}
       >
         <LogOut className="size-5 shrink-0" />
         <span className="font-bold leading-snug">Abmelden</span>

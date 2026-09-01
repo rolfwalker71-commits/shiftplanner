@@ -14,14 +14,15 @@ import { PlanPage } from "./pages/PlanPage";
 import { MonthListPage } from "./pages/MonthListPage";
 import { MorePage } from "./pages/MorePage";
 import { ImportPage } from "./pages/ImportPage";
-import { useMdUp } from "./hooks/useMdUp";
+import { useChrome } from "./hooks/useChrome";
 
 function HomeEntry() {
-  const desktop = useMdUp();
-  return desktop ? <CalendarPage /> : <Navigate to="/app/woche" replace />;
+  const chrome = useChrome();
+  return chrome === "desktop" ? <CalendarPage /> : <Navigate to="/app/woche" replace />;
 }
 
 export default function App() {
+  useChrome();
   const [status, setStatus] = useState<Status | null>(null);
 
   useEffect(() => {

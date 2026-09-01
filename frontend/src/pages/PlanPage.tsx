@@ -1,23 +1,33 @@
-import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
-import { addWeeks } from "date-fns";
-import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { addDays } from "date-fns";
+import { Plus } from "lucide-react";
 import { api } from "../api";
 import type { Shift, ShiftType } from "../types";
-import { iso, weekDayCaption, weekdayShort, weekDays, workLabel } from "../lib/dates";
+import { useChrome } from "../hooks/useChrome";
+import { coverRadius, listTileClass } from "../lib/platform";
+import {
+  iso,
+  weekDays,
+  weekRangeCompact,
+  weekWindow,
+  weekdayShort,
+  workLabelCompact,
+} from "../lib/dates";
 
 export function PlanPage() {
-  const [anchor, setAnchor] = useState(() => new Date());
-  const days = useMemo(() => weekDays(anchor), [anchor]);
+  const chrome = useChrome();
+  const weeks = useMemo(() => weekWindow(new Date(), 16, 24), []);
+  const from = iso(weeks[0]);
+  const to = iso(addDays(weeks[weeks.length - 1], 6));
   const [types, setTypes] = useState<ShiftType[]>([]);
   const [shifts, setShifts] = useState<Shift[]>([]);
+  const [current, setCurrent] = useState(() => iso(weekDays(new Date())[0]));
   const [pickedType, setPickedType] = useState<string | null>(null);
   const [pickedDay, setPickedDay] = useState(() => iso(new Date()));
   const [msg, setMsg] = useState<string | null>(null);
+  const scroller = useRef<HTMLDivElement>(null);
 
   async function reload() {
-    const from = iso(days[0]);
-    const to = iso(days[6]);
     const [t, s] = await Promise.all([api.shiftTypes(), api.shifts(from, to)]);
     setTypes(t);
     setShifts(s);
@@ -25,13 +35,37 @@ export function PlanPage() {
 
   useEffect(() => {
     reload().catch(() => undefined);
-  }, [days[0], days[6]]);
+  }, [from, to]);
 
   const byDay = useMemo(() => {
     const map = new Map<string, Shift[]>();
     for (const s of shifts) map.set(s.date, [...(map.get(s.date) ?? []), s]);
     return map;
   }, [shifts]);
+
+  useEffect(() => {
+    document.getElementById(`plan-week-${current}`)?.scrollIntoView({
+      inline: "center",
+      block: "nearest",
+    });
+  }, [weeks.length]);
+
+  useEffect(() => {
+    const root = scroller.current;
+    if (!root) return;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        const vis = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        const id = vis?.target.getAttribute("data-week");
+        if (id) setCurrent(id);
+      },
+      { root, threshold: 0.55 },
+    );
+    for (const node of root.querySelectorAll("[data-week]")) obs.observe(node);
+    return () => obs.disconnect();
+  }, [weeks.length]);
 
   async function assign(date: string) {
     if (!pickedType) {
@@ -56,158 +90,156 @@ export function PlanPage() {
     await reload();
   }
 
+  const mobile = chrome !== "desktop";
+  const chips = (
+    <div
+      className={`hide-scrollbar flex gap-1 overflow-x-auto ${
+        mobile
+          ? "h-12 min-h-12 items-center bg-[var(--app-surface)] px-3"
+          : "h-10 min-h-10 items-center rounded-md bg-card px-1 ring-1 ring-border"
+      }`}
+    >
+      {types.map((t) => {
+        const on = pickedType === t.id;
+        return (
+          <button
+            key={t.id}
+            type="button"
+            onClick={() => setPickedType(on ? null : t.id)}
+            className={`h-8 shrink-0 rounded-full px-3 text-[0.8125rem] font-extrabold leading-none text-ink ${
+              on ? "ring-2 ring-primary ring-offset-2 ring-offset-[var(--app-surface)]" : ""
+            }`}
+            style={{ background: t.color }}
+          >
+            {t.code}
+          </button>
+        );
+      })}
+    </div>
+  );
+
   return (
-    <div className="flex flex-col gap-3 pb-28">
-      <h1 className="text-[1.25rem] font-bold leading-snug">Einteilen</h1>
-      <div className="flex items-center gap-1">
-        <button
-          type="button"
-          className="grid size-11 place-items-center rounded-full"
-          onClick={() => setAnchor(addWeeks(anchor, -1))}
-          aria-label="Vorherige Woche"
-        >
-          <ChevronLeft className="size-4" />
-        </button>
-        <div className="hide-scrollbar flex min-w-0 flex-1 gap-1.5 overflow-x-auto">
-          {days.map((d) => {
-            const key = iso(d);
-            const on = key === pickedDay;
+    <div
+      className={`flex flex-col ${mobile ? "-mx-4 overflow-hidden" : "gap-3"}`}
+      style={
+        mobile
+          ? {
+              height:
+                "calc(100dvh - var(--header-h) - var(--dock-h) - env(safe-area-inset-bottom, 0px) - 1rem)",
+            }
+          : undefined
+      }
+    >
+      <h1
+        className={`shrink-0 text-center font-extrabold leading-snug tracking-tight ${
+          mobile ? "px-4 pb-1 pt-1 text-[1.2rem]" : "text-[1.15rem]"
+        }`}
+      >
+        {weekRangeCompact(current)}
+      </h1>
+      <p className="sr-only" aria-live="polite">
+        {msg}
+      </p>
+
+      <div
+        ref={scroller}
+        className={`hide-scrollbar min-h-0 flex-1 snap-x snap-mandatory overflow-x-auto overflow-y-hidden ${
+          mobile ? "" : "-mx-1"
+        }`}
+      >
+        <div className="flex h-full">
+          {weeks.map((start) => {
+            const key = iso(start);
+            const days = weekDays(start);
             return (
-              <button
+              <section
                 key={key}
-                type="button"
-                onClick={() => setPickedDay(key)}
-                className={`min-h-11 min-w-[3.4rem] flex-1 rounded-2xl px-1 py-2 leading-snug ${
-                  on ? "bg-navy text-white" : "bg-white text-ink ring-1 ring-line"
+                id={`plan-week-${key}`}
+                data-week={key}
+                className={`flex h-full shrink-0 snap-center flex-col ${
+                  mobile ? "w-full gap-1.5 px-4" : "w-full gap-2 px-1"
                 }`}
               >
-                <span className="block text-[0.7rem] font-semibold">{weekdayShort(d)}</span>
-                <span className="block text-[0.75rem] font-bold">{weekDayCaption(d)}</span>
-              </button>
+                {days.map((d) => {
+                  const dayKey = iso(d);
+                  const primary = (byDay.get(dayKey) ?? [])[0];
+                  const type = primary?.shiftType;
+                  const empty = !primary;
+                  const selected = dayKey === pickedDay;
+                  return (
+                    <div
+                      key={dayKey}
+                      className={`flex min-h-0 flex-1 items-center gap-2 px-2.5 ${listTileClass(chrome, selected)}`}
+                    >
+                      {empty ? (
+                        <button
+                          type="button"
+                          className={`grid size-10 shrink-0 place-items-center border-2 border-dashed border-border ${coverRadius(chrome)}`}
+                          onClick={() => assign(dayKey)}
+                          aria-label={`${weekdayShort(d)} Schicht wählen`}
+                        >
+                          <Plus className="size-4 text-muted" />
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          className={`shift-cover size-10 shrink-0 bg-canvas ${coverRadius(chrome)}`}
+                          onClick={() => assign(dayKey)}
+                        >
+                          {type?.imagePath ? (
+                            <img src={type.imagePath} alt="" className="size-full object-cover" />
+                          ) : (
+                            <span className="grid size-full place-items-center text-[0.75rem] font-bold">
+                              {type?.code}
+                            </span>
+                          )}
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        className="min-w-0 flex-1 text-left"
+                        onClick={() => assign(dayKey)}
+                      >
+                        <p className="font-bold leading-none">
+                          {weekdayShort(d)} {d.getDate()}.
+                        </p>
+                        <p className="mt-0.5 text-[0.8rem] leading-none text-muted">
+                          {empty
+                            ? "wählen"
+                            : type
+                              ? workLabelCompact(type.startTime, type.endTime, type.allDay)
+                              : ""}
+                        </p>
+                      </button>
+                      {type ? (
+                        <p className="shrink-0 text-[1.25rem] font-extrabold leading-none text-primary">
+                          {type.code}
+                        </p>
+                      ) : null}
+                      {primary ? (
+                        <button
+                          type="button"
+                          className="grid size-12 shrink-0 place-items-center text-[1.25rem] font-bold"
+                          onClick={() => remove(primary.id)}
+                          aria-label={`${type?.code ?? "Schicht"} löschen`}
+                        >
+                          ×
+                        </button>
+                      ) : (
+                        <span className="grid size-12 shrink-0 place-items-center text-[1.15rem] text-muted">
+                          ›
+                        </span>
+                      )}
+                    </div>
+                  );
+                })}
+              </section>
             );
           })}
         </div>
-        <button
-          type="button"
-          className="grid size-11 place-items-center rounded-full"
-          onClick={() => setAnchor(addWeeks(anchor, 1))}
-          aria-label="Nächste Woche"
-        >
-          <ChevronRight className="size-4" />
-        </button>
       </div>
 
-      <div className="flex flex-col gap-2">
-        {days.map((d) => {
-          const key = iso(d);
-          const placed = byDay.get(key) ?? [];
-          const primary = placed[0];
-          const type = primary?.shiftType;
-          const empty = !primary;
-          const selected = key === pickedDay;
-          return (
-            <div
-              key={key}
-              className={`flex items-center gap-3 rounded-2xl bg-white p-3 shadow-sm ring-1 ${
-                selected ? "ring-navy" : "ring-line"
-              }`}
-            >
-              {empty ? (
-                <button
-                  type="button"
-                  className="grid size-14 shrink-0 place-items-center rounded-xl border-2 border-dashed border-line"
-                  onClick={() => assign(key)}
-                  aria-label={`${weekdayShort(d)} Schicht wählen`}
-                >
-                  <Plus className="size-5 text-muted" />
-                </button>
-              ) : (
-                <Link to={`/app/heute?date=${key}`} className="shift-cover size-14 shrink-0 rounded-xl bg-canvas">
-                  {type?.imagePath ? (
-                    <img src={type.imagePath} alt="" className="size-full object-cover" />
-                  ) : (
-                    <span className="grid size-full place-items-center text-[0.8rem] font-bold">{type?.code}</span>
-                  )}
-                </Link>
-              )}
-              <div className="min-w-0 flex-1">
-                {empty ? (
-                  <button type="button" className="block w-full text-left" onClick={() => assign(key)}>
-                    <p className="font-bold leading-snug">
-                      {weekdayShort(d)} {weekDayCaption(d)}
-                    </p>
-                    <p className="text-[0.875rem] leading-snug text-muted">Schicht wählen</p>
-                  </button>
-                ) : (
-                  <Link to={`/app/heute?date=${key}`} className="block">
-                    <p className="font-bold leading-snug">
-                      {weekdayShort(d)} {weekDayCaption(d)}
-                    </p>
-                    <p className="text-[0.875rem] leading-snug text-muted">
-                      {type ? workLabel(type.startTime, type.endTime, type.allDay, type.breakMinutes) : ""}
-                    </p>
-                  </Link>
-                )}
-              </div>
-              {type ? (
-                <Link
-                  to={`/app/heute?date=${key}`}
-                  className="min-w-0 max-w-[42%] shrink-0 text-right"
-                  aria-label={type.name && type.name.toLowerCase() !== type.code.toLowerCase() ? `${type.code} ${type.name}` : type.code}
-                >
-                  <p className="break-words text-[1.35rem] font-extrabold leading-none text-navy">
-                    {type.code}
-                  </p>
-                  {type.name && type.name.toLowerCase() !== type.code.toLowerCase() ? (
-                    <p className="mt-0.5 break-words text-[0.75rem] font-semibold leading-snug text-ink">
-                      {type.name}
-                    </p>
-                  ) : null}
-                </Link>
-              ) : null}
-              {primary ? (
-                <button
-                  type="button"
-                  className="grid size-11 shrink-0 place-items-center rounded-full text-[1.25rem] font-bold text-ink"
-                  onClick={() => remove(primary.id)}
-                  aria-label={`${type?.code ?? "Schicht"} löschen`}
-                >
-                  ×
-                </button>
-              ) : (
-                <span className="text-[1.25rem] text-line">›</span>
-              )}
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="sticky bottom-24 z-10 rounded-2xl bg-white/95 p-2 shadow-sm ring-1 ring-line backdrop-blur">
-        <div className="hide-scrollbar flex gap-2 overflow-x-auto pb-1">
-          {types.map((t) => {
-            const on = pickedType === t.id;
-            return (
-              <button
-                key={t.id}
-                type="button"
-                onClick={() => setPickedType(on ? null : t.id)}
-                className={`h-11 shrink-0 rounded-full px-4 text-[0.8125rem] font-bold leading-none text-ink ${
-                  on ? "ring-2 ring-navy ring-offset-2" : ""
-                }`}
-                style={{ background: t.color }}
-              >
-                {t.code}
-                <span className="ml-1 font-medium">{t.name}</span>
-              </button>
-            );
-          })}
-        </div>
-        <p className="px-1 pt-1 text-[0.75rem] leading-snug text-muted">
-          Tippen, dann Tag wählen — kein Ziehen
-          {pickedType ? ` · ${types.find((t) => t.id === pickedType)?.code}` : ""}
-        </p>
-      </div>
-      {msg ? <p className="text-[0.8125rem] leading-snug text-muted">{msg}</p> : null}
+      <div className="shrink-0">{chips}</div>
     </div>
   );
 }

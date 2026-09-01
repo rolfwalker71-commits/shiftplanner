@@ -10,6 +10,8 @@ import {
   UserRound,
 } from "lucide-react";
 import type { Status } from "../types";
+import { useChrome } from "../hooks/useChrome";
+import { dockBarClass } from "../lib/platform";
 import { syncPushIfGranted } from "../lib/push";
 
 const desktopLinks = [
@@ -34,26 +36,32 @@ export function Layout({
   status: Status;
   onLogout: () => void;
 }) {
+  const chrome = useChrome();
+
   useEffect(() => {
     syncPushIfGranted().catch(() => undefined);
   }, []);
 
   return (
-    <div className="min-h-dvh bg-canvas">
-      <header className="sticky top-0 z-20 flex items-center justify-between gap-4 border-b border-line bg-white/90 px-4 py-3 backdrop-blur">
+    <div className="min-h-dvh bg-background">
+      <header className="chrome-header sticky top-0 z-20 flex items-center justify-between gap-4 px-4 py-2">
         <div className="flex items-center gap-2">
-          <img src="/logo.png" alt="" className="size-10" />
-          <span className="text-[1.375rem] font-bold leading-snug tracking-tight">Arbeitsplan</span>
+          <img src="/logo.png" alt="" className="size-10 lg:size-8" />
+          <span className="text-[1.25rem] font-extrabold leading-snug tracking-tight lg:text-[1.05rem] lg:font-semibold">
+            Arbeitsplan
+          </span>
         </div>
-        <nav className="hidden items-center gap-1 md:flex">
+        <nav className="hidden items-center gap-0.5 lg:flex">
           {desktopLinks.map((l) => (
             <NavLink
               key={l.to}
               to={l.to}
               end={l.end}
               className={({ isActive }) =>
-                `flex h-10 items-center gap-2 rounded-full px-3 text-[0.875rem] ${
-                  isActive ? "bg-canvas font-medium" : "text-muted hover:bg-canvas"
+                `relative flex h-11 items-center gap-2 px-3 text-[0.875rem] ${
+                  isActive
+                    ? "bg-primary/10 font-medium text-primary after:absolute after:inset-x-2 after:bottom-0 after:h-0.5 after:bg-primary"
+                    : "text-muted hover:bg-primary/5"
                 }`
               }
             >
@@ -62,38 +70,56 @@ export function Layout({
             </NavLink>
           ))}
         </nav>
-        <div className="hidden items-center gap-3 text-[0.8125rem] text-muted md:flex">
+        <div className="hidden items-center gap-3 text-[0.8125rem] text-muted lg:flex">
           <span className="max-w-40 break-words leading-snug">{status.user?.email}</span>
-          <button type="button" className="rounded-full px-3 py-1 hover:bg-canvas" onClick={onLogout}>
+          <button type="button" className="rounded-md px-3 py-1 hover:bg-primary/10" onClick={onLogout}>
             Abmelden
           </button>
         </div>
       </header>
 
-      <main className="mx-auto max-w-7xl px-4 pb-28 pt-5 md:pb-8">
+      <main
+        className="mx-auto max-w-7xl px-4 pt-4 lg:pb-8"
+        style={
+          chrome === "desktop"
+            ? undefined
+            : {
+                paddingBottom: "calc(var(--dock-h) + env(safe-area-inset-bottom, 0px))",
+              }
+        }
+      >
         <Outlet context={{ status, onLogout }} />
       </main>
 
       <nav
-        className="fixed inset-x-0 bottom-0 z-30 md:hidden"
-        style={{
-          padding:
-            "max(0.75rem, env(safe-area-inset-bottom)) max(0.75rem, env(safe-area-inset-right)) 0.75rem max(0.75rem, env(safe-area-inset-left))",
-        }}
+        className={dockBarClass(chrome)}
+        style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
       >
-        <div className="flex rounded-2xl bg-white p-1 shadow-lg ring-1 ring-line">
+        <div className="flex">
           {mobileLinks.map((l) => (
             <NavLink
               key={l.to}
               to={l.to}
-              className={({ isActive }) =>
-                `flex min-h-11 flex-1 flex-col items-center justify-center gap-0.5 rounded-xl px-0.5 text-center text-[0.7rem] leading-snug ${
-                  isActive ? "bg-canvas font-medium" : "text-muted"
-                }`
-              }
+              className="flex min-h-16 flex-1 flex-col items-center justify-center gap-1 px-0.5"
             >
-              <l.icon className="size-4" />
-              {l.label}
+              {({ isActive }) => (
+                <>
+                  <span
+                    className={`grid size-12 place-items-center rounded-full ${
+                      isActive ? "bg-secondary text-primary" : "text-muted"
+                    }`}
+                  >
+                    <l.icon className="size-5" />
+                  </span>
+                  <span
+                    className={`text-center text-[0.7rem] leading-none ${
+                      isActive ? "font-semibold text-primary" : "text-muted"
+                    }`}
+                  >
+                    {l.label}
+                  </span>
+                </>
+              )}
             </NavLink>
           ))}
         </div>
