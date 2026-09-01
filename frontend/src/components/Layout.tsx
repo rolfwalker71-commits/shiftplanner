@@ -4,6 +4,8 @@ import {
   Calendar,
   CalendarDays,
   CalendarRange,
+  ChevronLeft,
+  ChevronRight,
   ClipboardList,
   HelpCircle,
   Settings,
@@ -12,6 +14,7 @@ import {
 } from "lucide-react";
 import type { Status } from "../types";
 import { useChrome } from "../hooks/useChrome";
+import { HeaderChipProvider, useHeaderChipState } from "../lib/headerChip";
 import { dockBarClass } from "../lib/platform";
 import { syncPushIfGranted } from "../lib/push";
 
@@ -38,7 +41,22 @@ export function Layout({
   status: Status;
   onLogout: () => void;
 }) {
+  return (
+    <HeaderChipProvider>
+      <LayoutInner status={status} onLogout={onLogout} />
+    </HeaderChipProvider>
+  );
+}
+
+function LayoutInner({
+  status,
+  onLogout,
+}: {
+  status: Status;
+  onLogout: () => void;
+}) {
   const chrome = useChrome();
+  const { chip } = useHeaderChipState();
 
   useEffect(() => {
     syncPushIfGranted().catch(() => undefined);
@@ -46,12 +64,39 @@ export function Layout({
 
   return (
     <div className="min-h-dvh bg-background">
-      <header className="chrome-header sticky top-0 z-20 flex items-center justify-between gap-4 px-4 py-2">
-        <div className="flex items-center gap-2">
-          <img src="/logo.png" alt="" className="size-10 lg:size-8" />
-          <span className="text-[1.25rem] font-extrabold leading-snug tracking-tight lg:text-[1.05rem] lg:font-semibold">
+      <header className="chrome-header sticky top-0 z-20 flex items-center justify-between gap-3 px-4 py-2">
+        <div className="flex min-w-0 flex-1 items-center gap-2">
+          <img src="/logo.png" alt="" className="size-10 shrink-0 lg:size-8" />
+          <span className="shrink-0 text-[1.25rem] font-extrabold leading-snug tracking-tight lg:text-[1.05rem] lg:font-semibold">
             Arbeitsplan
           </span>
+          {chip.label ? (
+            <div className="ml-auto flex min-w-0 items-center gap-0.5 lg:hidden">
+              {chip.onPrev ? (
+                <button
+                  type="button"
+                  className="grid size-9 shrink-0 place-items-center text-primary"
+                  onClick={chip.onPrev}
+                  aria-label="Zurück"
+                >
+                  <ChevronLeft className="size-4" />
+                </button>
+              ) : null}
+              <span className="min-w-0 rounded-md bg-secondary px-2 py-1 text-right text-[0.7rem] font-bold leading-snug text-primary">
+                <span className="block break-words">{chip.label}</span>
+              </span>
+              {chip.onNext ? (
+                <button
+                  type="button"
+                  className="grid size-9 shrink-0 place-items-center text-primary"
+                  onClick={chip.onNext}
+                  aria-label="Weiter"
+                >
+                  <ChevronRight className="size-4" />
+                </button>
+              ) : null}
+            </div>
+          ) : null}
         </div>
         <nav className="hidden items-center gap-0.5 lg:flex">
           {desktopLinks.map((l) => (
@@ -81,7 +126,7 @@ export function Layout({
       </header>
 
       <main
-        className="mx-auto max-w-7xl px-4 pt-4 lg:pb-8"
+        className="mx-auto max-w-7xl px-4 pt-2 lg:pt-4 lg:pb-8"
         style={
           chrome === "desktop"
             ? undefined

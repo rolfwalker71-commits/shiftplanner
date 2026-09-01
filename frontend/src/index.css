@@ -147,9 +147,12 @@ button.shift-code {
 }
 
 .shift-cover {
+  position: relative;
   overflow: hidden;
 }
 .shift-cover > img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;

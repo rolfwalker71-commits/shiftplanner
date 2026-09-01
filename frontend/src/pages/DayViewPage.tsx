@@ -6,7 +6,8 @@ import type { Shift } from "../types";
 import { ShiftPhotoCard } from "../components/ShiftPhotoCard";
 import { useChrome } from "../hooks/useChrome";
 import { listTileClass } from "../lib/platform";
-import { asDate, dayWindow, formatTime, iso, workFacts } from "../lib/dates";
+import { useHeaderChip } from "../lib/headerChip";
+import { asDate, dayWindow, formatDate, formatTime, iso, workFacts } from "../lib/dates";
 
 export function DayViewPage() {
   const chrome = useChrome();
@@ -23,6 +24,7 @@ export function DayViewPage() {
   const [current, setCurrent] = useState(requested);
   const scroller = useRef<HTMLDivElement>(null);
   const mobile = chrome !== "desktop";
+  useHeaderChip(formatDate(current));
 
   async function reload() {
     setShifts(await api.shifts(from, to));
@@ -92,7 +94,7 @@ export function DayViewPage() {
         mobile
           ? {
               height:
-                "calc(100dvh - var(--header-h) - var(--dock-h) - env(safe-area-inset-bottom, 0px) - 1rem)",
+                "calc(100dvh - var(--header-h) - var(--dock-h) - env(safe-area-inset-bottom, 0px) - 0.5rem)",
             }
           : undefined
       }

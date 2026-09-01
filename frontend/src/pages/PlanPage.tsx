@@ -6,6 +6,7 @@ import { api } from "../api";
 import type { Shift, ShiftType } from "../types";
 import { useChrome } from "../hooks/useChrome";
 import { ShiftDayRow } from "../components/ShiftDayRow";
+import { useHeaderChip } from "../lib/headerChip";
 import { asDate, iso, weekDays, weekTitle, weekWindow } from "../lib/dates";
 
 export function PlanPage() {
@@ -95,6 +96,7 @@ export function PlanPage() {
   }
 
   const mobile = chrome !== "desktop";
+  useHeaderChip(weekTitle(current));
   const chips = (
     <div
       className={`hide-scrollbar flex gap-1 overflow-x-auto ${
@@ -129,18 +131,12 @@ export function PlanPage() {
         mobile
           ? {
               height:
-                "calc(100dvh - var(--header-h) - var(--dock-h) - env(safe-area-inset-bottom, 0px) - 1rem)",
+                "calc(100dvh - var(--header-h) - var(--dock-h) - env(safe-area-inset-bottom, 0px) - 0.5rem)",
             }
           : undefined
       }
     >
-      <h1
-        className={`shrink-0 break-words text-center font-extrabold leading-snug tracking-tight ${
-          mobile ? "px-4 pb-1 pt-1 text-[1.05rem]" : "text-[1.15rem]"
-        }`}
-      >
-        {weekTitle(current)}
-      </h1>
+      {mobile ? null : <h1 className="break-words text-[1.15rem] font-extrabold leading-snug">{weekTitle(current)}</h1>}
       <p className="sr-only" aria-live="polite">
         {msg}
       </p>

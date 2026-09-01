@@ -29,13 +29,13 @@ export function ShiftDayRow({
   return (
     <div
       className={`flex items-stretch overflow-hidden ${
-        grow ? "min-h-0 flex-1" : "min-h-[4.75rem]"
+        grow ? "min-h-0 flex-1" : "h-[4.25rem] min-h-[4.25rem]"
       } ${listTileClass(chrome, selected)}`}
     >
       <button
         type="button"
-        className={`shift-cover aspect-square min-h-0 shrink-0 self-stretch bg-canvas ${
-          grow ? "h-full" : "min-h-[4.75rem]"
+        className={`shift-cover shrink-0 overflow-hidden bg-canvas ${
+          grow ? "aspect-square h-full min-h-0 w-auto max-h-full self-stretch" : "size-16"
         }`}
         onClick={onOpen}
         aria-label={`${weekdayShort(date)} ${type?.code ?? emptyHint}`}
