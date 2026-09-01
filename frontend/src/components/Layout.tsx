@@ -139,7 +139,7 @@ function LayoutInner({
       </main>
 
       <nav
-        className={dockBarClass(chrome)}
+        className={`${dockBarClass(chrome)} pointer-events-auto`}
         style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
       >
         <div className="flex">
@@ -147,7 +147,7 @@ function LayoutInner({
             <NavLink
               key={l.to}
               to={l.to}
-              className="flex min-h-16 flex-1 flex-col items-center justify-center gap-1 px-0.5"
+              className="flex min-h-16 flex-1 flex-col items-center justify-center gap-1 px-0.5 [touch-action:manipulation]"
             >
               {({ isActive }) => (
                 <>

@@ -65,7 +65,7 @@ export function WeekViewPage() {
       {mobile ? null : <h1 className="break-words text-[1.15rem] font-extrabold leading-snug">{weekTitle(current)}</h1>}
       <div
         ref={scroller}
-        className={`hide-scrollbar min-h-0 flex-1 snap-x snap-mandatory overflow-x-auto overflow-y-hidden ${
+        className={`hide-scrollbar min-h-0 flex-1 snap-x snap-mandatory overflow-x-auto overflow-y-hidden [touch-action:pan-x] ${
           mobile ? "" : "-mx-1"
         }`}
       >

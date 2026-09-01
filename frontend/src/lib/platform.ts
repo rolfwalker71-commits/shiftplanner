@@ -11,7 +11,7 @@ export function listTileClass(chrome: Chrome, selected = false) {
 
 export function dockBarClass(chrome: Chrome) {
   if (chrome === "desktop") return "hidden";
-  return "fixed inset-x-0 bottom-0 z-30 bg-[var(--app-surface)] lg:hidden";
+  return "fixed inset-x-0 bottom-0 z-40 bg-[var(--app-surface)] lg:hidden";
 }
 
 export function panelClass(chrome: Chrome) {
