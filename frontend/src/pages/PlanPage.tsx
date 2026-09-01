@@ -4,7 +4,7 @@ import { Plus } from "lucide-react";
 import { api } from "../api";
 import type { Shift, ShiftType } from "../types";
 import { useChrome } from "../hooks/useChrome";
-import { coverRadius, listTileClass } from "../lib/platform";
+import { listTileClass } from "../lib/platform";
 import {
   iso,
   weekDays,
@@ -169,67 +169,69 @@ export function PlanPage() {
                   return (
                     <div
                       key={dayKey}
-                      className={`flex min-h-0 flex-1 items-center gap-2 px-2.5 ${listTileClass(chrome, selected)}`}
+                      className={`flex min-h-0 flex-1 items-stretch overflow-hidden ${listTileClass(chrome, selected)}`}
                     >
                       {empty ? (
                         <button
                           type="button"
-                          className={`grid size-10 shrink-0 place-items-center border-2 border-dashed border-border ${coverRadius(chrome)}`}
+                          className="grid aspect-square h-full min-h-0 shrink-0 place-items-center self-stretch bg-canvas"
                           onClick={() => assign(dayKey)}
                           aria-label={`${weekdayShort(d)} Schicht wählen`}
                         >
-                          <Plus className="size-4 text-muted" />
+                          <Plus className="size-5 text-muted" />
                         </button>
                       ) : (
                         <button
                           type="button"
-                          className={`shift-cover size-10 shrink-0 bg-canvas ${coverRadius(chrome)}`}
+                          className="shift-cover aspect-square h-full min-h-0 shrink-0 self-stretch bg-canvas"
                           onClick={() => assign(dayKey)}
                         >
                           {type?.imagePath ? (
                             <img src={type.imagePath} alt="" className="size-full object-cover" />
                           ) : (
-                            <span className="grid size-full place-items-center text-[0.75rem] font-bold">
+                            <span className="grid size-full place-items-center text-[0.85rem] font-bold">
                               {type?.code}
                             </span>
                           )}
                         </button>
                       )}
-                      <button
-                        type="button"
-                        className="min-w-0 flex-1 text-left"
-                        onClick={() => assign(dayKey)}
-                      >
-                        <p className="font-bold leading-none">
-                          {weekdayShort(d)} {d.getDate()}.
-                        </p>
-                        <p className="mt-0.5 text-[0.8rem] leading-none text-muted">
-                          {empty
-                            ? "wählen"
-                            : type
-                              ? workLabelCompact(type.startTime, type.endTime, type.allDay)
-                              : ""}
-                        </p>
-                      </button>
-                      {type ? (
-                        <p className="shrink-0 text-[1.25rem] font-extrabold leading-none text-primary">
-                          {type.code}
-                        </p>
-                      ) : null}
-                      {primary ? (
+                      <div className="flex min-w-0 flex-1 items-center gap-2 px-2.5">
                         <button
                           type="button"
-                          className="grid size-12 shrink-0 place-items-center text-[1.25rem] font-bold"
-                          onClick={() => remove(primary.id)}
-                          aria-label={`${type?.code ?? "Schicht"} löschen`}
+                          className="min-w-0 flex-1 text-left"
+                          onClick={() => assign(dayKey)}
                         >
-                          ×
+                          <p className="font-bold leading-none">
+                            {weekdayShort(d)} {d.getDate()}.
+                          </p>
+                          <p className="mt-0.5 text-[0.8rem] leading-none text-muted">
+                            {empty
+                              ? "wählen"
+                              : type
+                                ? workLabelCompact(type.startTime, type.endTime, type.allDay)
+                                : ""}
+                          </p>
                         </button>
-                      ) : (
-                        <span className="grid size-12 shrink-0 place-items-center text-[1.15rem] text-muted">
-                          ›
-                        </span>
-                      )}
+                        {type ? (
+                          <p className="shrink-0 text-[1.25rem] font-extrabold leading-none text-primary">
+                            {type.code}
+                          </p>
+                        ) : null}
+                        {primary ? (
+                          <button
+                            type="button"
+                            className="grid size-12 shrink-0 place-items-center text-[1.25rem] font-bold"
+                            onClick={() => remove(primary.id)}
+                            aria-label={`${type?.code ?? "Schicht"} löschen`}
+                          >
+                            ×
+                          </button>
+                        ) : (
+                          <span className="grid size-12 shrink-0 place-items-center text-[1.15rem] text-muted">
+                            ›
+                          </span>
+                        )}
+                      </div>
                     </div>
                   );
                 })}
