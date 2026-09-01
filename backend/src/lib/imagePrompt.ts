@@ -8,27 +8,23 @@ export type PromptInput = {
   showCodeInImage?: boolean;
 };
 
-const IDENTITY = `CHARACTER — the first attached image is Valentyna’s portrait. Every new picture must be HER, translated into clay, not a new woman and not a photo.
+const IDENTITY = `CHARACTER — the attached portrait is Valentyna. Copy her FACE GEOMETRY exactly. This is a likeness job, not a cute mascot.
 
-Keep from the portrait:
-- the same wide joyful smile and bright teeth
-- dark brown eyes that smile with her
-- thin arched brows, full cheeks, peach blush
-- honey / light-brown shoulder-length hair, tucked behind the ears
-- the same friendly, open face
+From the portrait, keep:
+- an adult oval face, natural width, visible jaw and chin — NOT a circle
+- normal cheek volume like the photo — NOT swollen, puffy, bloated, chipmunk, or baby-fat
+- the same wide smile and teeth, but do not inflate the cheeks around it
+- dark brown eyes, thin arched brows, hair tucked behind the ears
+- honey / light-brown shoulder-length hair
 
-Sculpt that likeness in clay. Do not age her, slim her, change her haircut, or make her photoreal.`;
+Forbidden: oversized head, balloon cheeks, spherical skull, toddler proportions, extra-wide grin that stretches the face. If clay style and likeness conflict, LIKENESS WINS.`;
 
-const STYLE = `ART STYLE — match the second attached image (the cozy clay-3D Frei illustration).
+const STYLE = `ART STYLE — cozy premium 3D claymorphism like a polished app illustration (matte plasticine, soft studio light, warm palette).
 
-Premium 3D claymorphism, like a high-end app icon:
-- smooth matte plasticine / clay, chunky rounded forms, no sharp edges
-- thick sculpted hair, toy-like clothes with soft folds, gentle studio light
-- warm cozy palette, soft shadows, octane-quality lighting but clay materials
-- square composition, face large and readable, half-body or close portrait
-- no watermark, no UI chrome, no photoreal skin, no Pixar caricature, no anime
-
-The result should look as polished and tactile as that Frei picture.`;
+Apply chunky rounded clay ONLY to clothes, furniture, props and hair strands.
+Do NOT apply chunky/round stylization to her skull, cheeks, nose or jaw.
+No photoreal skin, no glossy plastic face, no Pixar caricature, no anime.
+Square composition, face large and readable, half-body. No watermark, no UI chrome.`;
 
 const BADGE = `On work scenes she wears a small rectangular name badge on the blouse or apron. Two centered lines only: first line "Kantonspital Uri", second line "Valentyna".`;
 
@@ -74,7 +70,7 @@ export function buildIllustrationPrompt(input: PromptInput) {
     IDENTITY,
     STYLE,
     input.allDay
-      ? "Off-duty scene: no work uniform and no name badge. Same Valentyna as in the portrait, in the Frei clay-3D look."
+      ? "Off-duty scene: no work uniform and no name badge. Same facial proportions as the portrait, clay materials only."
       : JOB,
     `Shift "${input.code}" (${input.name}), ${hours}.`,
     `Mood and setting: ${setting}.`,
