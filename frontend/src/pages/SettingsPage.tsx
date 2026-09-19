@@ -3,6 +3,15 @@ import { Link } from "react-router-dom";
 import { api } from "../api";
 import type { Status } from "../types";
 import { disablePush, enablePush, pushSupported } from "../lib/push";
+import { readChromePref, writeChromePref, type ChromePref } from "../lib/chrome";
+import { useChrome } from "../hooks/useChrome";
+
+const looks: { value: ChromePref; label: string }[] = [
+  { value: "auto", label: "Automatisch" },
+  { value: "ios", label: "Liquid Glass" },
+  { value: "android", label: "Material" },
+  { value: "desktop", label: "Fluent" },
+];
 
 export function SettingsPage({
   status,
@@ -17,6 +26,8 @@ export function SettingsPage({
   const [pushOn, setPushOn] = useState(false);
   const [pushBusy, setPushBusy] = useState(false);
   const [pushError, setPushError] = useState<string | null>(null);
+  const [look, setLook] = useState<ChromePref>(() => readChromePref());
+  useChrome();
 
   useEffect(() => {
     api
@@ -35,7 +46,30 @@ export function SettingsPage({
   return (
     <div className="mx-auto flex max-w-xl flex-col gap-3">
       <h1 className="text-[1.25rem] font-semibold">Einstellungen</h1>
-      <section className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-line">
+      <section className="surface rounded-2xl p-4">
+        <h2 className="font-medium">Darstellung</h2>
+        <p className="mt-1 text-[0.875rem] leading-snug text-muted">
+          Automatisch: Liquid Glass auf iPhone und iPad, sonst Material bzw. Fluent. Hell und dunkel folgen dem System.
+        </p>
+        <div className="mt-3 grid grid-cols-2 gap-1 rounded-2xl bg-canvas p-1 sm:grid-cols-4" role="radiogroup" aria-label="Darstellung">
+          {looks.map((l) => (
+            <button
+              key={l.value}
+              type="button"
+              role="radio"
+              aria-checked={look === l.value}
+              className={`h-10 rounded-xl px-2 text-[0.8125rem] ${look === l.value ? "seg-on" : "text-muted"}`}
+              onClick={() => {
+                writeChromePref(l.value);
+                setLook(l.value);
+              }}
+            >
+              {l.label}
+            </button>
+          ))}
+        </div>
+      </section>
+      <section className="surface rounded-2xl p-4">
         <h2 className="font-medium">Erinnerung am Vortag</h2>
         <p className="mt-1 text-[0.875rem] leading-snug text-muted">
           Am Tag vor der Schicht um 18:00 Uhr kommt eine Nachricht mit Bild und Arbeitszeit.
@@ -49,7 +83,7 @@ export function SettingsPage({
           <div className="mt-3 flex flex-wrap gap-2">
             <button
               type="button"
-              className="inline-flex h-11 items-center rounded-full bg-navy px-4 text-white disabled:opacity-50"
+              className="inline-flex h-11 items-center rounded-full btn-primary px-4 disabled:opacity-50"
               disabled={pushBusy}
               onClick={async () => {
                 setPushBusy(true);
@@ -76,7 +110,7 @@ export function SettingsPage({
             {pushOn ? (
               <button
                 type="button"
-                className="inline-flex h-11 items-center rounded-full bg-white px-4 ring-1 ring-line disabled:opacity-50"
+                className="inline-flex h-11 items-center rounded-full btn-secondary px-4 disabled:opacity-50"
                 disabled={pushBusy}
                 onClick={async () => {
                   setPushBusy(true);
@@ -103,16 +137,16 @@ export function SettingsPage({
         ) : null}
         {msg ? <p className="mt-2 text-[0.8125rem] leading-snug text-muted">{msg}</p> : null}
       </section>
-      <section className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-line">
+      <section className="surface rounded-2xl p-4">
         <h2 className="font-medium">Dienstplan einlesen</h2>
         <p className="mt-1 text-[0.875rem] leading-snug text-muted">
           Monats-PDF hochladen, jeden erkannten Tag prüfen und dann übernehmen.
         </p>
-        <Link to="/app/import" className="mt-3 inline-flex h-11 items-center rounded-full bg-navy px-4 text-white">
+        <Link to="/app/import" className="mt-3 inline-flex h-11 items-center rounded-full btn-primary px-4">
           Zum Import
         </Link>
       </section>
-      <section className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-line">
+      <section className="surface rounded-2xl p-4">
         <h2 className="font-medium">Google-Konto</h2>
         <p className="mt-1 text-[0.875rem] text-muted">
           {status.user?.googleConnected
@@ -122,12 +156,12 @@ export function SettingsPage({
               : "Google OAuth ist nicht konfiguriert. Du kannst lokal planen; Events werden nicht synchronisiert."}
         </p>
         {status.googleConfigured ? (
-          <a href="/api/auth/google" className="mt-3 inline-flex h-11 items-center rounded-full bg-navy px-4 text-white">
+          <a href="/api/auth/google" className="mt-3 inline-flex h-11 items-center rounded-full btn-primary px-4">
             {status.user?.googleConnected ? "Google-Rechte aktualisieren" : "Mit Google verbinden"}
           </a>
         ) : null}
       </section>
-      <section className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-line">
+      <section className="surface rounded-2xl p-4">
         <h2 className="font-medium">Zielkalender</h2>
         <p className="mt-1 text-[0.875rem] leading-snug text-muted">
           Neue und verschobene Schichten werden sofort in diesem Kalender angelegt oder verschoben.
@@ -149,7 +183,7 @@ export function SettingsPage({
         </select>
         <button
           type="button"
-          className="mt-3 h-11 rounded-full bg-navy px-4 text-white disabled:opacity-50"
+          className="mt-3 h-11 rounded-full btn-primary px-4 disabled:opacity-50"
           disabled={!selected}
           onClick={async () => {
             await api.saveSettings({ selectedCalendarId: selected });

@@ -4,7 +4,7 @@ import { addDays } from "date-fns";
 import { Plus } from "lucide-react";
 import { api } from "../api";
 import type { Shift, ShiftType } from "../types";
-import { useChrome } from "../hooks/useChrome";
+import { useChrome, useWide } from "../hooks/useChrome";
 import { ShiftDayRow } from "../components/ShiftDayRow";
 import { useHeaderChip } from "../lib/headerChip";
 import { asDate, iso, weekDays, weekTitle, weekWindow } from "../lib/dates";
@@ -95,14 +95,17 @@ export function PlanPage() {
     await reload();
   }
 
-  const mobile = chrome !== "desktop";
+  const mobile = !useWide();
+  const glass = chrome === "ios";
   useHeaderChip(weekTitle(current));
   const chips = (
     <div
       className={`hide-scrollbar flex gap-1 overflow-x-auto ${
-        mobile
-          ? "h-12 min-h-12 items-center bg-[var(--app-surface)] px-3"
-          : "h-10 min-h-10 items-center rounded-md bg-card px-1 ring-1 ring-border"
+        glass
+          ? `glass items-center rounded-full px-1.5 ${mobile ? "mx-3 mb-1 h-12 min-h-12" : "h-12 min-h-12"}`
+          : mobile
+            ? "h-12 min-h-12 items-center bg-[var(--app-surface)] px-3"
+            : "h-10 min-h-10 items-center rounded-md bg-card px-1 ring-1 ring-border"
       }`}
     >
       {types.map((t) => {
@@ -113,7 +116,11 @@ export function PlanPage() {
             type="button"
             onClick={() => setPickedType(on ? null : t.id)}
             className={`h-8 shrink-0 rounded-full px-3 text-[0.8125rem] font-extrabold leading-none text-ink ${
-              on ? "ring-2 ring-primary ring-offset-2 ring-offset-[var(--app-surface)]" : ""
+              on
+                ? glass
+                  ? "outline-2 outline-offset-2 outline-primary"
+                  : "ring-2 ring-primary ring-offset-2 ring-offset-[var(--app-surface)]"
+                : ""
             }`}
             style={{ background: t.color }}
           >

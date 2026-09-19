@@ -28,7 +28,7 @@ export function MorePage() {
             <span className="block font-bold leading-snug">{item.label}</span>
             <span className="block text-[0.875rem] leading-snug text-muted">{item.text}</span>
           </span>
-          <span className="text-[1.25rem] text-line">›</span>
+          <span className="text-[1.25rem] text-muted">›</span>
         </Link>
       ))}
       <button

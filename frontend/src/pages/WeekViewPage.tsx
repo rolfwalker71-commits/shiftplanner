@@ -3,13 +3,14 @@ import { addDays } from "date-fns";
 import { api } from "../api";
 import type { Shift } from "../types";
 import { ShiftPhotoCard } from "../components/ShiftPhotoCard";
-import { useChrome } from "../hooks/useChrome";
+import { useChrome, useWide } from "../hooks/useChrome";
+import { tileRadius } from "../lib/platform";
 import { useHeaderChip } from "../lib/headerChip";
 import { iso, weekDays, weekTitle, weekWindow } from "../lib/dates";
 
 export function WeekViewPage() {
   const chrome = useChrome();
-  const mobile = chrome !== "desktop";
+  const mobile = !useWide();
   const weeks = useMemo(() => weekWindow(new Date(), 16, 24), []);
   const from = iso(weeks[0]);
   const to = iso(addDays(weeks[weeks.length - 1], 6));
@@ -88,8 +89,8 @@ export function WeekViewPage() {
                   return (
                     <div
                       key={dayKey}
-                      className={`min-h-0 flex-1 overflow-hidden ${
-                        chrome === "desktop" ? "rounded-md" : "rounded-3xl"
+                      className={`min-h-0 flex-1 overflow-hidden ${tileRadius(chrome)} ${
+                        chrome === "ios" ? "glass" : ""
                       }`}
                     >
                       <ShiftPhotoCard date={d} type={type} fill />

@@ -121,7 +121,7 @@ export function CalendarPage() {
     >
       <div className="flex flex-col gap-4 lg:flex-row">
         <aside className={typesOpen ? "lg:w-64 lg:shrink-0" : "lg:w-11 lg:shrink-0"}>
-          <div className="rounded-2xl bg-white p-2 shadow-sm ring-1 ring-line lg:p-3">
+          <div className="surface rounded-2xl p-2 lg:p-3">
             <button
               type="button"
               className="flex min-h-11 w-full items-center justify-between gap-2 rounded-xl px-2 text-left"
@@ -152,7 +152,7 @@ export function CalendarPage() {
           <NotifyPrompt />
           <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <button type="button" className="grid size-10 place-items-center rounded-full hover:bg-white" onClick={() => setAnchor(view === "month" ? addMonths(anchor, -1) : addWeeks(anchor, -1))} aria-label="Zurück">
+              <button type="button" className="grid size-10 place-items-center rounded-full hover:bg-canvas" onClick={() => setAnchor(view === "month" ? addMonths(anchor, -1) : addWeeks(anchor, -1))} aria-label="Zurück">
                 <ChevronLeft className="size-4" />
               </button>
               <h1 className="min-w-40 text-[1.15rem] font-semibold leading-snug">
@@ -160,15 +160,15 @@ export function CalendarPage() {
                   ? monthLabel(anchor)
                   : formatDateRange(weekDays(anchor)[0], weekDays(anchor)[6])}
               </h1>
-              <button type="button" className="grid size-10 place-items-center rounded-full hover:bg-white" onClick={() => setAnchor(view === "month" ? addMonths(anchor, 1) : addWeeks(anchor, 1))} aria-label="Weiter">
+              <button type="button" className="grid size-10 place-items-center rounded-full hover:bg-canvas" onClick={() => setAnchor(view === "month" ? addMonths(anchor, 1) : addWeeks(anchor, 1))} aria-label="Weiter">
                 <ChevronRight className="size-4" />
               </button>
             </div>
-            <div className="flex h-10 rounded-full bg-white p-0.5 ring-1 ring-line">
-              <button type="button" onClick={() => setView("week")} className={`flex h-full items-center gap-1 rounded-full px-3 text-[0.8125rem] leading-none ${view === "week" ? "bg-canvas font-medium" : "text-muted"}`}>
+            <div className="surface flex h-10 rounded-full p-0.5">
+              <button type="button" onClick={() => setView("week")} className={`flex h-full items-center gap-1 rounded-full px-3 text-[0.8125rem] leading-none ${view === "week" ? "seg-on" : "text-muted"}`}>
                 <CalendarRange className="size-4" /> Woche
               </button>
-              <button type="button" onClick={() => { setView("month"); setAnchor(startOfMonth(anchor)); }} className={`flex h-full items-center gap-1 rounded-full px-3 text-[0.8125rem] leading-none ${view === "month" ? "bg-canvas font-medium" : "text-muted"}`}>
+              <button type="button" onClick={() => { setView("month"); setAnchor(startOfMonth(anchor)); }} className={`flex h-full items-center gap-1 rounded-full px-3 text-[0.8125rem] leading-none ${view === "month" ? "seg-on" : "text-muted"}`}>
                 <CalendarDays className="size-4" /> Monat
               </button>
             </div>
@@ -202,7 +202,7 @@ export function CalendarPage() {
       </DragOverlay>
 
       {toast ? (
-        <div className="fixed bottom-24 left-1/2 z-40 -translate-x-1/2 rounded-full bg-navy px-4 py-2 text-[0.8125rem] text-white shadow-lg md:bottom-6">
+        <div className="toast fixed bottom-24 left-1/2 z-40 -translate-x-1/2 rounded-full px-4 py-2 text-[0.8125rem] md:bottom-6">
           {toast}
           <button type="button" className="ml-3 underline" onClick={() => setToast(null)}>
             Ok
@@ -252,14 +252,14 @@ function DayCell({
   return (
     <div
       ref={setNodeRef}
-      className={`shift-cover relative overflow-hidden rounded-2xl bg-white ring-1 ${isOver ? "ring-navy" : today ? "ring-navy" : "ring-line"} ${week ? "min-h-72" : "aspect-square"} ${outside ? "opacity-45" : ""}`}
+      className={`surface shift-cover relative overflow-hidden rounded-2xl ${isOver || today ? "outline-2 outline-offset-1 outline-primary" : ""} ${week ? "min-h-72" : "aspect-square"} ${outside ? "opacity-45" : ""}`}
     >
       {cover ? (
         <img src={cover} alt="" className="absolute inset-0 size-full object-cover" />
       ) : null}
 
       <div
-        className="absolute left-1 top-1 z-10 max-w-[calc(100%-2.5rem)] rounded-md bg-white/45 px-1 py-0.5 text-[0.7rem] font-extrabold leading-snug break-words text-ink"
+        className="absolute left-1 top-1 z-10 max-w-[calc(100%-2.5rem)] rounded-md scrim px-1 py-0.5 text-[0.7rem] font-extrabold leading-snug break-words text-ink"
         title={formatDate(date)}
       >
         {formatDate(date)}
@@ -279,7 +279,7 @@ function DayCell({
       ) : null}
 
       {shifts.length > 0 ? (
-        <div className="absolute inset-x-0 bottom-0 z-10 bg-white/45 px-1 py-px">
+        <div className="absolute inset-x-0 bottom-0 z-10 scrim px-1 py-px">
           {shifts.map((s) => (
             <PlacedShift key={s.id} shift={s} extraDelete={s.id !== primary?.id} onDelete={() => onDelete(s.id)} />
           ))}
@@ -349,14 +349,14 @@ function NotifyPrompt() {
   if (!show) return null;
 
   return (
-    <div className="mb-3 flex flex-col gap-2 rounded-2xl bg-white p-3 shadow-sm ring-1 ring-line sm:flex-row sm:items-center sm:justify-between">
+    <div className="mb-3 flex flex-col gap-2 surface rounded-2xl p-3 sm:flex-row sm:items-center sm:justify-between">
       <p className="min-w-0 text-[0.875rem] leading-snug text-ink">
         Erinnerung am Vortag mit Bild und Arbeitszeit — einmalig erlauben.
       </p>
       <div className="flex shrink-0 gap-2">
         <button
           type="button"
-          className="inline-flex h-11 items-center rounded-full bg-navy px-4 text-white disabled:opacity-50"
+          className="inline-flex h-11 items-center rounded-full btn-primary px-4 disabled:opacity-50"
           disabled={busy}
           onClick={async () => {
             setBusy(true);

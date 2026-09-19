@@ -14,11 +14,11 @@ import { PlanPage } from "./pages/PlanPage";
 import { MonthListPage } from "./pages/MonthListPage";
 import { MorePage } from "./pages/MorePage";
 import { ImportPage } from "./pages/ImportPage";
-import { useChrome } from "./hooks/useChrome";
+import { useChrome, useWide } from "./hooks/useChrome";
 
 function HomeEntry() {
-  const chrome = useChrome();
-  return chrome === "desktop" ? <CalendarPage /> : <Navigate to="/app/woche" replace />;
+  const wide = useWide();
+  return wide ? <CalendarPage /> : <Navigate to="/app/woche" replace />;
 }
 
 export default function App() {

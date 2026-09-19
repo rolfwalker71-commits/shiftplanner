@@ -127,7 +127,7 @@ export function ShiftTypesPage() {
         </div>
         <button
           type="button"
-          className="flex h-11 items-center gap-2 rounded-full bg-navy px-4 text-white"
+          className="flex h-11 items-center gap-2 rounded-full btn-primary px-4"
           onClick={() => {
             setEditing(emptyForm());
             setPrompt(null);
@@ -139,7 +139,7 @@ export function ShiftTypesPage() {
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         {types.map((t) => (
-          <article key={t.id} className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-line">
+          <article key={t.id} className="surface overflow-hidden rounded-2xl">
             <div className="shift-cover aspect-square bg-canvas">
               {t.imagePath ? (
                 <img src={t.imagePath} alt={t.code} className="size-full object-cover" />
@@ -152,10 +152,10 @@ export function ShiftTypesPage() {
               <p className="text-[0.875rem]">{t.name}</p>
               <TypeMeta type={t} />
               <div className="mt-3 flex gap-2">
-                <button type="button" className="flex h-11 flex-1 items-center justify-center gap-1 rounded-xl ring-1 ring-line" onClick={() => { setEditing(t); setPrompt(null); }}>
+                <button type="button" className="flex h-11 flex-1 items-center justify-center gap-1 rounded-xl btn-secondary" onClick={() => { setEditing(t); setPrompt(null); }}>
                   <Pencil className="size-4" /> Bearbeiten
                 </button>
-                <button type="button" className="grid size-11 place-items-center rounded-xl ring-1 ring-line" onClick={async () => { await api.deleteType(t.id); await reload(); }} aria-label="Löschen">
+                <button type="button" className="grid size-11 place-items-center rounded-xl btn-secondary" onClick={async () => { await api.deleteType(t.id); await reload(); }} aria-label="Löschen">
                   <Trash2 className="size-4" />
                 </button>
               </div>
@@ -166,7 +166,7 @@ export function ShiftTypesPage() {
 
       {editing ? (
         <div className="fixed inset-0 z-40 grid place-items-center bg-black/30 p-4">
-          <div className="max-h-[90dvh] w-full max-w-3xl overflow-auto rounded-2xl bg-white p-5 shadow-xl">
+          <div className="max-h-[90dvh] w-full max-w-3xl overflow-auto sheet rounded-3xl p-5">
             <div className="mb-4 flex items-start justify-between gap-3">
               <h2 className="text-[1.15rem] font-semibold">{editing.id ? "Schichtart bearbeiten" : "Neue Schichtart"}</h2>
               <button type="button" className="grid size-11 place-items-center rounded-full hover:bg-canvas" onClick={() => setEditing(null)} aria-label="Schliessen">
@@ -245,10 +245,10 @@ export function ShiftTypesPage() {
                   )}
                 </div>
                 <div className="mt-3 flex flex-wrap gap-2">
-                  <button type="button" className="flex h-11 flex-1 items-center justify-center gap-2 rounded-full bg-navy px-4 text-white disabled:opacity-50" disabled={busy} onClick={generate}>
+                  <button type="button" className="flex h-11 flex-1 items-center justify-center gap-2 rounded-full btn-primary px-4 disabled:opacity-50" disabled={busy} onClick={generate}>
                     <Sparkles className="size-4" /> Illustration erzeugen
                   </button>
-                  <button type="button" className="h-11 rounded-full px-4 ring-1 ring-line" onClick={showPrompt}>
+                  <button type="button" className="h-11 rounded-full btn-secondary px-4" onClick={showPrompt}>
                     Prompt
                   </button>
                 </div>
@@ -259,10 +259,10 @@ export function ShiftTypesPage() {
                 ) : null}
               </div>
             </div>
-            {error ? <p className="mt-3 text-[0.875rem] text-red-700">{error}</p> : null}
+            {error ? <p className="mt-3 text-[0.875rem] text-red-600 dark:text-red-400">{error}</p> : null}
             <div className="mt-5 flex justify-end gap-2">
               <button type="button" className="h-11 rounded-full px-4" onClick={() => setEditing(null)}>Abbrechen</button>
-              <button type="button" className="h-11 rounded-full bg-navy px-5 text-white disabled:opacity-50" disabled={busy} onClick={save}>Speichern</button>
+              <button type="button" className="h-11 rounded-full btn-primary px-5 disabled:opacity-50" disabled={busy} onClick={save}>Speichern</button>
             </div>
           </div>
         </div>

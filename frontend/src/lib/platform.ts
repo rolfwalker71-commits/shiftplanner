@@ -1,6 +1,9 @@
 import type { Chrome } from "./chrome";
 
 export function listTileClass(chrome: Chrome, selected = false) {
+  if (chrome === "ios") {
+    return selected ? "rounded-[1.75rem] glass glass-selected" : "rounded-[1.75rem] glass";
+  }
   if (chrome === "desktop") {
     return selected
       ? "rounded-md bg-primary/10 ring-1 ring-border"
@@ -9,12 +12,8 @@ export function listTileClass(chrome: Chrome, selected = false) {
   return selected ? "rounded-3xl bg-secondary text-primary" : "rounded-3xl bg-card";
 }
 
-export function dockBarClass(chrome: Chrome) {
-  if (chrome === "desktop") return "hidden";
-  return "fixed inset-x-0 bottom-0 z-40 bg-[var(--app-surface)] lg:hidden";
-}
-
 export function panelClass(chrome: Chrome) {
+  if (chrome === "ios") return "rounded-[1.75rem] glass";
   if (chrome === "desktop") {
     return "rounded-md bg-card/80 ring-1 ring-border backdrop-blur-[1.25rem]";
   }
@@ -22,12 +21,16 @@ export function panelClass(chrome: Chrome) {
 }
 
 export function iconBtnClass(chrome: Chrome) {
+  if (chrome === "ios") {
+    return "glass grid size-11 place-items-center rounded-full text-foreground";
+  }
   if (chrome === "desktop") {
     return "grid size-11 place-items-center rounded-md text-foreground hover:bg-primary/10";
   }
   return "grid size-12 place-items-center rounded-full text-foreground";
 }
 
-export function coverRadius(chrome: Chrome) {
-  return chrome === "desktop" ? "rounded-sm" : "rounded-2xl";
+export function tileRadius(chrome: Chrome) {
+  if (chrome === "ios") return "rounded-[1.75rem]";
+  return chrome === "desktop" ? "rounded-md" : "rounded-3xl";
 }

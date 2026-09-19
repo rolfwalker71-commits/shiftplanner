@@ -1,3 +1,6 @@
+import { useChrome } from "../hooks/useChrome";
+import { panelClass } from "../lib/platform";
+
 const cards = [
   {
     title: "Schichtarten selbst definieren",
@@ -38,6 +41,7 @@ const cards = [
 ];
 
 export function HelpPage() {
+  const chrome = useChrome();
   return (
     <div>
       <h1 className="mb-1 text-[1.25rem] font-semibold">Hilfe & Tipps</h1>
@@ -46,7 +50,7 @@ export function HelpPage() {
       </p>
       <div className="grid gap-3 sm:grid-cols-2">
         {cards.map((c) => (
-          <article key={c.title} className="rounded-3xl bg-card p-4 lg:rounded-md lg:ring-1 lg:ring-border">
+          <article key={c.title} className={`p-4 ${panelClass(chrome)}`}>
             <h2 className="text-[1rem] font-semibold leading-snug">{c.title}</h2>
             <p className="mt-2 text-[0.875rem] leading-snug text-muted">{c.text}</p>
           </article>

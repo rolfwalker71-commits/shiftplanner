@@ -29,7 +29,7 @@ export function ShiftPhotoCard({
           <p className="text-[1.15rem] font-extrabold leading-snug text-muted">Keine Schicht</p>
         </div>
       )}
-      <div className={`absolute left-3 top-3 z-10 max-w-[70%] rounded-xl bg-white/45 ${fill ? "px-2.5 py-1" : "px-3 py-1.5"}`}>
+      <div className={`absolute left-3 top-3 z-10 max-w-[70%] rounded-xl scrim ${fill ? "px-2.5 py-1" : "px-3 py-1.5"}`}>
         <p className={`font-extrabold leading-snug text-ink ${fill ? "text-[0.85rem]" : "text-[0.95rem]"}`}>
           {weekdayLong(date)}
         </p>
@@ -38,7 +38,7 @@ export function ShiftPhotoCard({
         </p>
       </div>
       {type ? (
-        <div className={`absolute inset-x-3 bottom-3 z-10 flex items-center justify-center rounded-2xl bg-white/45 px-3 ${fill ? "py-0.5" : "py-1"}`}>
+        <div className={`absolute inset-x-3 bottom-3 z-10 flex items-center justify-center rounded-2xl scrim px-3 ${fill ? "py-0.5" : "py-1"}`}>
           <p className={`text-center font-extrabold leading-none text-ink ${fill ? "text-[0.95rem]" : "text-[1.05rem]"}`}>
             {type.name && type.name.toLowerCase() !== type.code.toLowerCase()
               ? `${type.code} · ${type.name}`

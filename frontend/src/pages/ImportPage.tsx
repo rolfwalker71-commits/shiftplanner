@@ -110,7 +110,7 @@ export function ImportPage() {
         Ein erneuter Import ersetzt den ganzen Monat — nichts bleibt doppelt.
       </p>
 
-      <section className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-line">
+      <section className="surface rounded-2xl p-4">
         <label className="block text-[0.875rem] font-medium">
           Monat
           <input
@@ -139,7 +139,7 @@ export function ImportPage() {
         </label>
         <button
           type="button"
-          className="mt-3 inline-flex h-11 items-center gap-2 rounded-full bg-navy px-4 text-white disabled:opacity-50"
+          className="mt-3 inline-flex h-11 items-center gap-2 rounded-full btn-primary px-4 disabled:opacity-50"
           disabled={busy}
           onClick={readPlan}
         >
@@ -148,7 +148,7 @@ export function ImportPage() {
         </button>
       </section>
 
-      {error ? <p className="text-[0.875rem] leading-snug text-red-700">{error}</p> : null}
+      {error ? <p className="text-[0.875rem] leading-snug text-red-600 dark:text-red-400">{error}</p> : null}
       {done ? <p className="text-[0.875rem] leading-snug text-muted">{done}</p> : null}
 
       {preview ? (
@@ -160,13 +160,13 @@ export function ImportPage() {
           </p>
 
           {preview.missing.length ? (
-            <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-line">
+            <div className="surface rounded-2xl p-4">
               <p className="text-[0.875rem] leading-snug">
                 Diese Codes gibt es lokal noch nicht: <strong>{preview.missing.join(", ")}</strong>
               </p>
               <button
                 type="button"
-                className="mt-3 h-11 rounded-full bg-white px-4 ring-1 ring-line disabled:opacity-50"
+                className="mt-3 h-11 rounded-full btn-secondary px-4 disabled:opacity-50"
                 disabled={busy}
                 onClick={createMissing}
               >
@@ -177,7 +177,7 @@ export function ImportPage() {
 
           <ul className="flex flex-col gap-2">
             {preview.days.map((day) => (
-              <li key={day.date} className="flex items-center gap-3 rounded-2xl bg-white p-3 shadow-sm ring-1 ring-line">
+              <li key={day.date} className="flex items-center gap-3 surface rounded-2xl p-3">
                 <img
                   src={day.thumb}
                   alt={day.label}
@@ -208,7 +208,7 @@ export function ImportPage() {
 
           <button
             type="button"
-            className="h-11 rounded-full bg-navy px-4 text-white disabled:opacity-50"
+            className="h-11 rounded-full btn-primary px-4 disabled:opacity-50"
             disabled={busy || assigned === 0}
             onClick={commit}
           >

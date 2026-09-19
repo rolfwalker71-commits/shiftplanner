@@ -1,6 +1,8 @@
 import { useSearchParams } from "react-router-dom";
 import type { Status } from "../types";
 import { api } from "../api";
+import { useChrome } from "../hooks/useChrome";
+import { panelClass } from "../lib/platform";
 
 const errors: Record<string, string> = {
   oauth:
@@ -17,10 +19,12 @@ export function LoginPage({
 }) {
   const [params] = useSearchParams();
   const error = errors[params.get("error") ?? ""];
+  const chrome = useChrome();
+  const round = chrome === "desktop" ? "rounded-md" : "rounded-full";
 
   return (
     <div className="grid min-h-dvh place-items-center px-4">
-      <div className="w-full max-w-md rounded-3xl bg-card p-8 lg:rounded-md lg:ring-1 lg:ring-border">
+      <div className={`w-full max-w-md p-8 ${panelClass(chrome)}`}>
         <img src="/logo.png" alt="" className="mb-4 size-12" />
         <h1 className="text-[1.875rem] font-bold leading-snug tracking-tight">Arbeitsplan</h1>
         <p className="mt-2 text-[0.95rem] leading-snug text-muted">
@@ -36,7 +40,7 @@ export function LoginPage({
           {status.googleConfigured ? (
             <a
               href="/api/auth/google"
-              className="flex h-12 items-center justify-center rounded-full bg-primary text-[var(--app-on-primary)] lg:h-11 lg:rounded-md"
+              className={`btn-primary flex h-12 items-center justify-center ${round}`}
             >
               Mit Google anmelden
             </a>
@@ -48,7 +52,9 @@ export function LoginPage({
           {status.demoMode ? (
             <button
               type="button"
-              className="flex h-12 items-center justify-center rounded-full bg-secondary text-primary lg:h-11 lg:rounded-md lg:bg-card lg:ring-1 lg:ring-border"
+              className={`flex h-12 items-center justify-center ${round} ${
+                chrome === "android" ? "bg-secondary text-primary" : "btn-secondary"
+              }`}
               onClick={async () => {
                 await api.demoLogin();
                 onLogin();

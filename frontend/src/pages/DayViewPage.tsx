@@ -4,7 +4,7 @@ import { addDays } from "date-fns";
 import { api } from "../api";
 import type { Shift } from "../types";
 import { ShiftPhotoCard } from "../components/ShiftPhotoCard";
-import { useChrome } from "../hooks/useChrome";
+import { useChrome, useWide } from "../hooks/useChrome";
 import { listTileClass } from "../lib/platform";
 import { useHeaderChip } from "../lib/headerChip";
 import { asDate, dayWindow, formatDate, formatTime, iso, workFacts } from "../lib/dates";
@@ -23,7 +23,7 @@ export function DayViewPage() {
   const [shifts, setShifts] = useState<Shift[]>([]);
   const [current, setCurrent] = useState(requested);
   const scroller = useRef<HTMLDivElement>(null);
-  const mobile = chrome !== "desktop";
+  const mobile = !useWide();
   useHeaderChip(formatDate(current));
 
   async function reload() {
@@ -82,10 +82,11 @@ export function DayViewPage() {
     await reload();
   }
 
+  const glass = chrome === "ios";
   const btn =
     chrome === "desktop"
       ? "flex h-10 min-h-10 flex-1 items-center justify-center rounded-md text-[0.8125rem] font-semibold"
-      : "flex h-10 min-h-10 flex-1 items-center justify-center rounded-full text-[0.8125rem] font-semibold";
+      : `flex ${glass ? "h-11 min-h-11" : "h-10 min-h-10"} flex-1 items-center justify-center rounded-full text-[0.8125rem] font-semibold`;
 
   return (
     <div
@@ -136,7 +137,9 @@ export function DayViewPage() {
               className={`max-w-[42%] shrink-0 text-right ${
                 chrome === "desktop"
                   ? "rounded-md bg-primary/10 px-2.5 py-1"
-                  : "rounded-2xl bg-secondary px-2.5 py-1"
+                  : glass
+                    ? "glass-selected rounded-2xl px-3 py-1.5"
+                    : "rounded-2xl bg-secondary px-2.5 py-1"
               }`}
             >
               <span className="block text-[0.7rem] font-semibold leading-none text-primary">Morgen</span>
@@ -148,12 +151,12 @@ export function DayViewPage() {
           <div className="mt-2 flex gap-2">
             <Link
               to={`/app/planen?date=${current}`}
-              className={`${btn} bg-primary text-[var(--app-on-primary)]`}
+              className={`${btn} btn-primary`}
             >
               Ändern
             </Link>
             {shift ? (
-              <button type="button" className={`${btn} bg-secondary text-primary`} onClick={() => remove()}>
+              <button type="button" className={`${btn} ${glass ? "btn-secondary text-[#ff3b30]" : "bg-secondary text-primary"}`} onClick={() => remove()}>
                 Löschen
               </button>
             ) : null}
