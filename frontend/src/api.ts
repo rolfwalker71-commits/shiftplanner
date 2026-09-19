@@ -1,4 +1,4 @@
-import type { Shift, ShiftType, Status } from "./types";
+import type { Shift, ShiftType, Status, WidgetPayload, WidgetSettings } from "./types";
 
 export type ImportPreviewDay = {
   day: number;
@@ -88,6 +88,16 @@ export const api = {
       { method: "DELETE" },
     ),
   pushTest: () => req<{ ok: boolean }>("/api/push/test", { method: "POST" }),
+  widgetSettings: () => req<{ settings: WidgetSettings; hasToken: boolean }>("/api/widget/settings"),
+  saveWidgetSettings: (body: Partial<WidgetSettings>) =>
+    req<{ settings: WidgetSettings }>("/api/widget/settings", { method: "PUT", body: JSON.stringify(body) }),
+  widgetPreview: () => req<WidgetPayload>("/api/widget/preview"),
+  widgetScript: async (base: string) => {
+    const res = await fetch(`/api/widget/script?base=${encodeURIComponent(base)}`, { credentials: "include" });
+    if (!res.ok) throw new Error("Skript konnte nicht geladen werden");
+    return res.text();
+  },
+  rotateWidgetToken: () => req<{ ok: boolean }>("/api/widget/token", { method: "POST" }),
   previewImport: async (file: File, month: string, person: string) => {
     const body = new FormData();
     body.append("file", file);

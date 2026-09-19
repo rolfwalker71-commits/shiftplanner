@@ -31,6 +31,10 @@ const cards = [
     text: "Unten: Tag, Woche, Monat, Einteilen, Konto. Woche wischen, unter Einteilen Schicht antippen, Konto für Import und Google. Zum Home-Bildschirm hinzufügen.",
   },
   {
+    title: "Widgets für iPhone und iPad",
+    text: "Unter Einstellungen › Widgets Grösse und Layout wählen, Skript kopieren und in der App Scriptable einfügen. Danach auf dem Home- oder Sperrbildschirm ein Scriptable-Widget hinzufügen. Änderungen in der App gelten sofort.",
+  },
+  {
     title: "Nachtdienst",
     text: "Endet die Zeit vor dem Start (z. B. 22:00–06:00), legt der Sync das Event über Mitternacht.",
   },

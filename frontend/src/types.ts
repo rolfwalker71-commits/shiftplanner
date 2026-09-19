@@ -34,3 +34,35 @@ export type Status = {
     googleConnected: boolean;
   } | null;
 };
+
+export type WidgetSettings = {
+  title: string;
+  small: "next" | "today" | "countdown";
+  medium: "twoDays" | "week";
+  large: "week" | "twoWeeks" | "month";
+  extraLarge: "week" | "month";
+  showImages: boolean;
+  showTimes: boolean;
+  showHours: boolean;
+  showFree: boolean;
+  theme: "auto" | "light" | "dark";
+};
+
+export type WidgetShift = {
+  code: string;
+  name: string;
+  color: string;
+  allDay: boolean;
+  start: string | null;
+  end: string | null;
+  breakMinutes: number;
+  hours: number;
+  image: string | null;
+  thumb: string | null;
+};
+
+export type WidgetPayload = {
+  settings: WidgetSettings;
+  today: string;
+  days: { date: string; shift: WidgetShift | null }[];
+};

@@ -15,6 +15,8 @@ model User {
   googleRefreshToken  String?
   selectedCalendarId  String?
   timezone            String      @default("Europe/Zurich")
+  widgetToken         String?
+  widgetSettings      String?
   createdAt           DateTime    @default(now())
   updatedAt           DateTime    @updatedAt
   shiftTypes          ShiftType[]

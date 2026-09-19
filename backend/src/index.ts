@@ -13,6 +13,7 @@ import { shiftTypeRoutes } from "./routes/shiftTypes.js";
 import { shiftRoutes } from "./routes/shifts.js";
 import { importPlanRoutes } from "./routes/importPlan.js";
 import { pushRoutes } from "./routes/push.js";
+import { widgetRoutes } from "./routes/widget.js";
 import { startReminderScheduler } from "./lib/reminders.js";
 import { configureWebPush } from "./lib/vapid.js";
 import { cropStoredIllustrations } from "./lib/images.js";
@@ -44,6 +45,7 @@ await app.register(shiftTypeRoutes);
 await app.register(shiftRoutes);
 await app.register(importPlanRoutes);
 await app.register(pushRoutes);
+await app.register(widgetRoutes);
 
 app.get("/api/health", async () => ({ ok: true }));
 

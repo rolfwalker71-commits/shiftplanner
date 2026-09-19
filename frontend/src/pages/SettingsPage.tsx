@@ -70,6 +70,15 @@ export function SettingsPage({
         </div>
       </section>
       <section className="surface rounded-2xl p-4">
+        <h2 className="font-medium">Widgets</h2>
+        <p className="mt-1 text-[0.875rem] leading-snug text-muted">
+          Nächste Schicht, Woche oder Monat auf dem Home- und Sperrbildschirm von iPhone und iPad – über Scriptable.
+        </p>
+        <Link to="/app/widgets" className="btn-primary mt-3 inline-flex h-11 items-center rounded-full px-4">
+          Widgets einrichten
+        </Link>
+      </section>
+      <section className="surface rounded-2xl p-4">
         <h2 className="font-medium">Erinnerung am Vortag</h2>
         <p className="mt-1 text-[0.875rem] leading-snug text-muted">
           Am Tag vor der Schicht um 18:00 Uhr kommt eine Nachricht mit Bild und Arbeitszeit.

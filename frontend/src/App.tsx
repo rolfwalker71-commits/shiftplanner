@@ -14,6 +14,7 @@ import { PlanPage } from "./pages/PlanPage";
 import { MonthListPage } from "./pages/MonthListPage";
 import { MorePage } from "./pages/MorePage";
 import { ImportPage } from "./pages/ImportPage";
+import { WidgetsPage } from "./pages/WidgetsPage";
 import { useChrome, useWide } from "./hooks/useChrome";
 
 function HomeEntry() {
@@ -59,6 +60,7 @@ export default function App() {
         <Route path="hilfe" element={<HelpPage />} />
         <Route path="einstellungen" element={<SettingsPage status={status} onChange={() => api.status().then(setStatus)} />} />
         <Route path="import" element={<ImportPage />} />
+        <Route path="widgets" element={<WidgetsPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
