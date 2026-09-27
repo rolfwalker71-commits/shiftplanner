@@ -17,21 +17,30 @@ export type Shift = {
   id: string;
   date: string;
   googleEventId: string | null;
+  caldavEventUrl: string | null;
   shiftTypeId: string;
   shiftType: ShiftType;
 };
 
+export type CalendarProvider = "google" | "caldav";
+
 export type Status = {
   demoMode: boolean;
   googleConfigured: boolean;
+  caldavLoginConfigured: boolean;
+  caldavServerUrl: string | null;
   openaiConfigured: boolean;
   user: {
     id: string;
     email: string;
     name: string | null;
     selectedCalendarId: string | null;
+    calendarProvider: CalendarProvider | null;
     timezone: string;
     googleConnected: boolean;
+    caldavConnected: boolean;
+    caldavUsername: string | null;
+    caldavServerUrl: string | null;
   } | null;
 };
 

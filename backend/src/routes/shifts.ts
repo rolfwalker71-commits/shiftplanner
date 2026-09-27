@@ -2,10 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 import { prisma } from "../db.js";
 import { requireUser } from "../session.js";
-import {
-  deleteCalendarEvent,
-  upsertCalendarEvent,
-} from "../lib/google.js";
+import { removeShiftEvent, syncShiftEvent } from "../lib/calendarSync.js";
 import { notifyShiftIfDue } from "../lib/reminders.js";
 
 const createSchema = z.object({
@@ -41,31 +38,14 @@ export async function shiftRoutes(app: FastifyInstance) {
     });
     if (!type) return reply.code(404).send({ error: "Schichtart unbekannt" });
 
-    const { eventId, driveFileId } = await upsertCalendarEvent({
-      user,
-      date: parsed.data.date,
-      code: type.code,
-      name: type.name,
-      startTime: type.startTime,
-      endTime: type.endTime,
-      allDay: type.allDay,
-      description: type.description,
-      imagePath: type.imagePath,
-      googleDriveFileId: type.googleDriveFileId,
-    });
-    if (driveFileId && driveFileId !== type.googleDriveFileId) {
-      await prisma.shiftType.update({
-        where: { id: type.id },
-        data: { googleDriveFileId: driveFileId },
-      });
-    }
+    const refs = await syncShiftEvent(user, type, parsed.data.date);
 
     const created = await prisma.shift.create({
       data: {
         userId: user.id,
         shiftTypeId: type.id,
         date: parsed.data.date,
-        googleEventId: eventId,
+        ...refs,
       },
       include: { shiftType: true },
     });
@@ -85,30 +65,12 @@ export async function shiftRoutes(app: FastifyInstance) {
     });
     if (!shift) return reply.code(404).send({ error: "Nicht gefunden" });
 
-    const { eventId, driveFileId } = await upsertCalendarEvent({
-      user,
-      eventId: shift.googleEventId,
-      date: parsed.data.date,
-      code: shift.shiftType.code,
-      name: shift.shiftType.name,
-      startTime: shift.shiftType.startTime,
-      endTime: shift.shiftType.endTime,
-      allDay: shift.shiftType.allDay,
-      description: shift.shiftType.description,
-      imagePath: shift.shiftType.imagePath,
-      googleDriveFileId: shift.shiftType.googleDriveFileId,
-    });
-    if (driveFileId && driveFileId !== shift.shiftType.googleDriveFileId) {
-      await prisma.shiftType.update({
-        where: { id: shift.shiftTypeId },
-        data: { googleDriveFileId: driveFileId },
-      });
-    }
+    const refs = await syncShiftEvent(user, shift.shiftType, parsed.data.date, shift);
 
     await prisma.shiftReminder.deleteMany({ where: { shiftId: id } });
     const updated = await prisma.shift.update({
       where: { id },
-      data: { date: parsed.data.date, googleEventId: eventId ?? shift.googleEventId },
+      data: { date: parsed.data.date, ...refs },
       include: { shiftType: true },
     });
     notifyShiftIfDue(updated.id).catch(() => undefined);
@@ -121,7 +83,7 @@ export async function shiftRoutes(app: FastifyInstance) {
     const { id } = req.params as { id: string };
     const shift = await prisma.shift.findFirst({ where: { id, userId: user.id } });
     if (!shift) return reply.code(404).send({ error: "Nicht gefunden" });
-    await deleteCalendarEvent(user, shift.googleEventId);
+    await removeShiftEvent(user, shift);
     await prisma.shift.delete({ where: { id } });
     return { ok: true };
   });

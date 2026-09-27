@@ -12,7 +12,7 @@ export function MorePage() {
     { to: "/app/import", label: "Dienstplan einlesen", text: "Monats-PDF prüfen und importieren", icon: Upload },
     { to: "/app/widgets", label: "Widgets", text: "Home- und Sperrbildschirm mit Scriptable", icon: LayoutGrid },
     { to: "/app/hilfe", label: "Hilfe", text: "Kurztour und Tipps", icon: HelpCircle },
-    { to: "/app/einstellungen", label: "Einstellungen", text: "Google, Kalender, Erinnerungen", icon: Settings },
+    { to: "/app/einstellungen", label: "Einstellungen", text: "Kalenderkonto, Erinnerungen", icon: Settings },
   ];
 
   return (

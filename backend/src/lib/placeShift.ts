@@ -1,6 +1,6 @@
 import type { User } from "@prisma/client";
 import { prisma } from "../db.js";
-import { deleteCalendarEvent, upsertCalendarEvent } from "./google.js";
+import { removeShiftEvent, syncShiftEvent } from "./calendarSync.js";
 import { notifyShiftIfDue } from "./reminders.js";
 
 export async function clearShiftsInRange(user: User, from: string, to: string) {
@@ -8,7 +8,7 @@ export async function clearShiftsInRange(user: User, from: string, to: string) {
     where: { userId: user.id, date: { gte: from, lte: to } },
   });
   for (const shift of existing) {
-    await deleteCalendarEvent(user, shift.googleEventId);
+    await removeShiftEvent(user, shift);
     await prisma.shiftReminder.deleteMany({ where: { shiftId: shift.id } });
     await prisma.shift.delete({ where: { id: shift.id } });
   }
@@ -23,31 +23,14 @@ export async function placeShift(user: User, shiftTypeId: string, date: string) 
 
   await clearShiftsInRange(user, date, date);
 
-  const { eventId, driveFileId } = await upsertCalendarEvent({
-    user,
-    date,
-    code: type.code,
-    name: type.name,
-    startTime: type.startTime,
-    endTime: type.endTime,
-    allDay: type.allDay,
-    description: type.description,
-    imagePath: type.imagePath,
-    googleDriveFileId: type.googleDriveFileId,
-  });
-  if (driveFileId && driveFileId !== type.googleDriveFileId) {
-    await prisma.shiftType.update({
-      where: { id: type.id },
-      data: { googleDriveFileId: driveFileId },
-    });
-  }
+  const refs = await syncShiftEvent(user, type, date);
 
   const created = await prisma.shift.create({
     data: {
       userId: user.id,
       shiftTypeId: type.id,
       date,
-      googleEventId: eventId,
+      ...refs,
     },
     include: { shiftType: true },
   });

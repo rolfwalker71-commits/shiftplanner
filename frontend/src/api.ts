@@ -1,4 +1,4 @@
-import type { Shift, ShiftType, Status, WidgetPayload, WidgetSettings } from "./types";
+import type { CalendarProvider, Shift, ShiftType, Status, WidgetPayload, WidgetSettings } from "./types";
 
 export type ImportPreviewDay = {
   day: number;
@@ -46,6 +46,12 @@ async function req<T>(path: string, init?: RequestInit): Promise<T> {
 export const api = {
   status: () => req<Status>("/api/auth/status"),
   demoLogin: () => req<{ ok: boolean }>("/api/auth/demo", { method: "POST" }),
+  caldavLogin: (username: string, password: string) =>
+    req<{ ok: boolean }>("/api/auth/caldav", { method: "POST", body: JSON.stringify({ username, password }) }),
+  caldavConnect: (body: { serverUrl?: string; username: string; password: string }) =>
+    req<{ ok: boolean; calendars: number }>("/api/caldav/connect", { method: "POST", body: JSON.stringify(body) }),
+  caldavDisconnect: () => req<{ ok: boolean }>("/api/caldav", { method: "DELETE" }),
+  resyncCalendar: () => req<{ total: number; synced: number }>("/api/calendar/resync", { method: "POST" }),
   logout: () => req<{ ok: boolean }>("/api/auth/logout", { method: "POST" }),
   shiftTypes: () => req<ShiftType[]>("/api/shift-types"),
   createType: (body: Partial<ShiftType>) =>
@@ -71,10 +77,14 @@ export const api = {
     req<Shift>(`/api/shifts/${id}`, { method: "PATCH", body: JSON.stringify({ date }) }),
   deleteShift: (id: string) => req<{ ok: boolean }>(`/api/shifts/${id}`, { method: "DELETE" }),
   calendars: () =>
-    req<{ items: { id: string; summary: string; primary?: boolean }[]; selectedCalendarId: string | null }>(
+    req<{
+      items: { id: string; summary: string; primary?: boolean }[];
+      selectedCalendarId: string | null;
+      provider: CalendarProvider | null;
+    }>(
       "/api/calendars",
     ),
-  saveSettings: (body: { selectedCalendarId?: string; timezone?: string }) =>
+  saveSettings: (body: { selectedCalendarId?: string; calendarProvider?: CalendarProvider; timezone?: string }) =>
     req("/api/settings", { method: "PUT", body: JSON.stringify(body) }),
   pushKey: () => req<{ publicKey: string }>("/api/push/vapid-public-key"),
   pushStatus: () => req<{ subscribed: boolean; devices: number }>("/api/push/status"),

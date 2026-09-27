@@ -13,6 +13,7 @@ services:
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
       GOOGLE_REDIRECT_URI: https://schichten.rolfwalker.ch/api/auth/google/callback
+      CALDAV_SERVER_URL: ${CALDAV_SERVER_URL:-}
       ALLOWED_EMAILS: ${ALLOWED_EMAILS:-valentyna@valentoys.ch}
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       OPENAI_IMAGE_MODEL: ${OPENAI_IMAGE_MODEL:-gpt-image-1}

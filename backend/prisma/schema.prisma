@@ -14,6 +14,11 @@ model User {
   googleId            String?     @unique
   googleRefreshToken  String?
   selectedCalendarId  String?
+  calendarProvider    String?
+  caldavServerUrl     String?
+  caldavUsername      String?
+  caldavPassword      String?
+  caldavCalendarUrl   String?
   timezone            String      @default("Europe/Zurich")
   widgetToken         String?
   widgetSettings      String?
@@ -55,6 +60,7 @@ model Shift {
   shiftType      ShiftType @relation(fields: [shiftTypeId], references: [id], onDelete: Cascade)
   date           String
   googleEventId  String?
+  caldavEventUrl String?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
   reminders      ShiftReminder[]

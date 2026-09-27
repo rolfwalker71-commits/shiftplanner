@@ -11,8 +11,8 @@ const cards = [
     text: "Am Computer: Schichtart auf einen Tag ziehen. Handy: unter Einteilen die Art antippen, dann den Tag. Woche wischen. Löschen mit ×.",
   },
   {
-    title: "Google Kalender",
-    text: "Sofort beim Ablegen, Verschieben oder Löschen — wenn Google verbunden und ein Zielkalender gewählt ist. Das Clay-Bild wird als Anhang am Event mitgeschickt. Google zeigt es nicht als Kachel im Raster, nur in den Event-Details.",
+    title: "Kalender-Sync (CalDAV oder Google)",
+    text: "Sofort beim Ablegen, Verschieben oder Löschen — wenn ein Kalenderkonto verbunden und ein Zielkalender gewählt ist. CalDAV funktioniert mit iCloud, Infomaniak, Nextcloud, Fastmail, mailbox.org und anderen; dort hängt das Clay-Bild als Link am Event. Bei Google kommt es als Drive-Anhang mit.",
   },
   {
     title: "KI-Illustration",
@@ -28,7 +28,7 @@ const cards = [
   },
   {
     title: "Handy und PWA",
-    text: "Unten: Tag, Woche, Monat, Einteilen, Konto. Woche wischen, unter Einteilen Schicht antippen, Konto für Import und Google. Zum Home-Bildschirm hinzufügen.",
+    text: "Unten: Tag, Woche, Monat, Einteilen, Konto. Woche wischen, unter Einteilen Schicht antippen, Konto für Import und Kalender. Zum Home-Bildschirm hinzufügen.",
   },
   {
     title: "Widgets für iPhone und iPad",

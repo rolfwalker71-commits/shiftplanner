@@ -1,6 +1,6 @@
 # Schichtklar
 
-Persönliche Schichtplanung als selbst gehostete PWA: eigene Schichtcodes (z. B. F2, S1, N), Arbeitszeiten inkl. Pause, Drag-and-Drop auf den Kalender, optionaler Google-Kalender-Sync und KI-generierte Clay-3D-Icons.
+Persönliche Schichtplanung als selbst gehostete PWA: eigene Schichtcodes (z. B. F2, S1, N), Arbeitszeiten inkl. Pause, Drag-and-Drop auf den Kalender, optionaler Kalender-Sync per CalDAV oder Google und KI-generierte Clay-3D-Icons.
 
 Die Illustrationen zeigen **dieselbe Person in der Gästebetreuung / im Restaurantbetrieb eines Spitals** — Service, Tabletts, Speisesaal. Keine Pflege, keine medizinische Kleidung.
 
@@ -20,7 +20,7 @@ npm run dev
 - App: [http://localhost:5173](http://localhost:5173)
 - API: [http://localhost:3001](http://localhost:3001)
 
-Mit `DEMO_MODE=true` (Standard) reicht **Lokal starten** ohne Google.
+Mit `DEMO_MODE=true` (Standard) reicht **Lokal starten** ohne Kalenderkonto.
 
 ## Schichtbilder (KI)
 
@@ -35,6 +35,18 @@ Der Generierungs-Prompt ist fest verdrahtet in `backend/src/lib/imagePrompt.ts`:
 5. Schichtcode im Hintergrund nur wenn der Schalter an ist  
 
 Ohne `OPENAI_API_KEY` kopiert die App passende Platzhalter aus `backend/assets/`. Mit Key wird `OPENAI_IMAGE_MODEL` genutzt (`gpt-image-1` oder `dall-e-3`).
+
+## CalDAV (iCloud, Infomaniak, Nextcloud, Fastmail, mailbox.org …)
+
+1. `CALDAV_SERVER_URL` in `.env` setzen, z. B. `https://sync.infomaniak.com`, `https://caldav.icloud.com` oder `https://cloud.example.ch/remote.php/dav`. Dann gibt es auf der Startseite **Mit Kalenderkonto anmelden** (Benutzername + App-Passwort). Die Anmeldung läuft nur gegen diesen einen Server.
+2. `ALLOWED_EMAILS` gilt auch hier: der CalDAV-Benutzername muss in der Liste stehen (leer = alle Konten dieses Servers).
+3. Hat das Konto dieselbe E-Mail wie das bisherige Google-Konto, landet die Anmeldung im selben Benutzer — Schichtarten, Bilder und Schichten bleiben erhalten.
+4. Alternativ unter Einstellungen › Kalenderkonto einen beliebigen CalDAV-Server verbinden (auch ohne `CALDAV_SERVER_URL`).
+5. Zielkalender wählen, dann **Kommende Schichten übertragen**: legt alle Schichten ab heute im neuen Kalender an und entfernt sie aus Google, solange Google noch verbunden ist.
+
+Das App-Passwort wird verschlüsselt gespeichert (Schlüssel aus `SESSION_SECRET` — wer ihn ändert, muss CalDAV neu verbinden). Events werden in UTC geschrieben, Nachtdienste über Mitternacht liegen auf zwei Tagen. Das Clay-Bild hängt als Link (`URL` / `ATTACH`) am Event; es muss unter `APP_URL` öffentlich erreichbar sein.
+
+Sind CalDAV und Google gleichzeitig verbunden, wählt man unter Einstellungen, wohin synchronisiert wird.
 
 ## Google Workspace
 

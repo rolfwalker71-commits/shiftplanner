@@ -14,6 +14,7 @@ const schema = z.object({
   GOOGLE_REDIRECT_URI: z
     .string()
     .default("http://localhost:3001/api/auth/google/callback"),
+  CALDAV_SERVER_URL: z.string().optional().default(""),
   ALLOWED_EMAILS: z.string().optional().default(""),
   OPENAI_API_KEY: z.string().optional().default(""),
   OPENAI_IMAGE_MODEL: z.string().default("gpt-image-1"),
@@ -29,6 +30,8 @@ export const env = schema.parse(process.env);
 export const googleConfigured = Boolean(
   env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET,
 );
+/** CalDAV sign-in is offered only against the server fixed here, so nobody can log in via a server they control. */
+export const caldavLoginConfigured = Boolean(env.CALDAV_SERVER_URL);
 export const openaiConfigured = Boolean(env.OPENAI_API_KEY);
 
 export const allowedEmails = env.ALLOWED_EMAILS.split(",")
