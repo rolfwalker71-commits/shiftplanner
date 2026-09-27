@@ -36,15 +36,15 @@ Der Generierungs-Prompt ist fest verdrahtet in `backend/src/lib/imagePrompt.ts`:
 
 Ohne `OPENAI_API_KEY` kopiert die App passende Platzhalter aus `backend/assets/`. Mit Key wird `OPENAI_IMAGE_MODEL` genutzt (`gpt-image-1` oder `dall-e-3`).
 
-## CalDAV (iCloud, Infomaniak, Nextcloud, Fastmail, mailbox.org …)
+## CalDAV (Standard: Hetzner Webhosting)
 
-1. `CALDAV_SERVER_URL` in `.env` setzen, z. B. `https://sync.infomaniak.com`, `https://caldav.icloud.com` oder `https://cloud.example.ch/remote.php/dav`. Dann gibt es auf der Startseite **Mit Kalenderkonto anmelden** (Benutzername + App-Passwort). Die Anmeldung läuft nur gegen diesen einen Server.
+1. `CALDAV_SERVER_URL` ist in `docker-compose.yml` auf `https://webmail.your-server.de` voreingestellt — der Kalender aus dem Hetzner Webhosting (KonsoleH / Webmail). Anmeldung dort mit **E-Mail-Adresse und Postfach-Passwort**. Andere Anbieter: `https://caldav.icloud.com` (App-Passwort), `https://sync.infomaniak.com`, `https://cloud.example.ch/remote.php/dav`. Auf der Startseite gibt es dann **Mit Kalenderkonto anmelden**. Die Anmeldung läuft nur gegen diesen einen Server.
 2. `ALLOWED_EMAILS` gilt auch hier: der CalDAV-Benutzername muss in der Liste stehen (leer = alle Konten dieses Servers).
 3. Hat das Konto dieselbe E-Mail wie das bisherige Google-Konto, landet die Anmeldung im selben Benutzer — Schichtarten, Bilder und Schichten bleiben erhalten.
 4. Alternativ unter Einstellungen › Kalenderkonto einen beliebigen CalDAV-Server verbinden (auch ohne `CALDAV_SERVER_URL`).
 5. Zielkalender wählen, dann **Kommende Schichten übertragen**: legt alle Schichten ab heute im neuen Kalender an und entfernt sie aus Google, solange Google noch verbunden ist.
 
-Das App-Passwort wird verschlüsselt gespeichert (Schlüssel aus `SESSION_SECRET` — wer ihn ändert, muss CalDAV neu verbinden). Events werden in UTC geschrieben, Nachtdienste über Mitternacht liegen auf zwei Tagen. Das Clay-Bild hängt als Link (`URL` / `ATTACH`) am Event; es muss unter `APP_URL` öffentlich erreichbar sein.
+Das Passwort wird verschlüsselt gespeichert (Schlüssel aus `SESSION_SECRET` — wer ihn ändert, muss CalDAV neu verbinden). Events werden in UTC geschrieben, Nachtdienste über Mitternacht liegen auf zwei Tagen. Das Clay-Bild hängt als Link (`URL` / `ATTACH`) am Event; es muss unter `APP_URL` öffentlich erreichbar sein.
 
 Sind CalDAV und Google gleichzeitig verbunden, wählt man unter Einstellungen, wohin synchronisiert wird.
 

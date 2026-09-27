@@ -71,7 +71,7 @@ export function LoginPage({
               }}
             >
               <label className="text-[0.8125rem]">
-                Benutzername
+                E-Mail-Adresse
                 <input
                   className={`mt-1 h-11 w-full ${field} bg-canvas px-3`}
                   type="text"
@@ -80,12 +80,12 @@ export function LoginPage({
                   spellCheck={false}
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="name@beispiel.ch"
+                  placeholder="valentyna@valentoys.ch"
                   required
                 />
               </label>
               <label className="text-[0.8125rem]">
-                App-Passwort
+                Passwort
                 <input
                   className={`mt-1 h-11 w-full ${field} bg-canvas px-3`}
                   type="password"

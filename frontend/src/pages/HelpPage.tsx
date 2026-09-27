@@ -12,7 +12,7 @@ const cards = [
   },
   {
     title: "Kalender-Sync (CalDAV oder Google)",
-    text: "Sofort beim Ablegen, Verschieben oder Löschen — wenn ein Kalenderkonto verbunden und ein Zielkalender gewählt ist. CalDAV funktioniert mit iCloud, Infomaniak, Nextcloud, Fastmail, mailbox.org und anderen; dort hängt das Clay-Bild als Link am Event. Bei Google kommt es als Drive-Anhang mit.",
+    text: "Sofort beim Ablegen, Verschieben oder Löschen — wenn ein Kalenderkonto verbunden und ein Zielkalender gewählt ist. CalDAV funktioniert mit Hetzner Webhosting, iCloud, Nextcloud, Infomaniak, Fastmail und anderen; dort hängt das Clay-Bild als Link am Event. Bei Google kommt es als Drive-Anhang mit.",
   },
   {
     title: "KI-Illustration",

@@ -282,8 +282,8 @@ function CalendarAccountSection({ status, onChange }: { status: Status; onChange
     <section className="surface rounded-2xl p-4">
       <h2 className="font-medium">Kalenderkonto</h2>
       <p className="mt-1 text-[0.875rem] leading-snug text-muted">
-        CalDAV funktioniert mit iCloud, Infomaniak, Nextcloud, Fastmail, mailbox.org und anderen.
-        Am besten ein App-Passwort des Anbieters verwenden.
+        CalDAV funktioniert mit Hetzner Webhosting, iCloud, Nextcloud, Infomaniak, Fastmail und anderen.
+        Bei Hetzner E-Mail-Adresse und Postfach-Passwort, bei iCloud ein App-Passwort.
       </p>
 
       {both ? (
@@ -349,12 +349,12 @@ function CalendarAccountSection({ status, onChange }: { status: Status; onChange
               spellCheck={false}
               value={serverUrl}
               onChange={(e) => setServerUrl(e.target.value)}
-              placeholder="https://caldav.icloud.com"
+              placeholder="https://webmail.your-server.de"
               required
             />
           </label>
           <p className="text-[0.75rem] leading-snug text-muted">
-            iCloud: caldav.icloud.com · Infomaniak: sync.infomaniak.com · Nextcloud: https://host/remote.php/dav
+            Hetzner Webhosting: webmail.your-server.de · iCloud: caldav.icloud.com · Nextcloud: https://host/remote.php/dav
           </p>
           <label className="text-[0.8125rem]">
             Benutzername
@@ -369,7 +369,7 @@ function CalendarAccountSection({ status, onChange }: { status: Status; onChange
             />
           </label>
           <label className="text-[0.8125rem]">
-            App-Passwort
+            Passwort
             <input
               className="mt-1 h-11 w-full rounded-xl bg-canvas px-3"
               type="password"
